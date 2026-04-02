@@ -4,37 +4,41 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-DASH is a Splunk app (v1.0.0) — a visual style builder for Splunk classic XML dashboards. Users design app-wide CSS themes through a form-based interface, preview them across use case templates (Cybersecurity, IT Ops, APM — 5 dashboards each), and export styled Splunk apps. It uses Splunk's Simple XML dashboard framework with custom JavaScript/jQuery frontend and Splunk KV Store for template persistence. There is no Node.js build step — all JS/CSS is served as-is by Splunk's web server.
+CIM Data Generator (CIMDG) is a Splunk app (v1.0.0) — the first CIM-native synthetic data generator for Splunk. Users select CIM data models (Authentication, Network Traffic, Web, Endpoint, etc.) and generate synthetic events that are born CIM-compliant with correct fields, tags, and values — no Technology Add-on required. The app supports two generation modes: continuous streaming via modular inputs and on-demand batch generation via a custom search command (`| cimgenerate`). It uses Splunk's Simple XML for the configuration dashboard and Dashboard Studio for monitoring/validation dashboards. All Python code runs on Splunk's built-in Python 3 interpreter with stdlib only — no third-party dependencies.
 
 ## Development Setup
 
 ```bash
 # Symlink the app into Splunk (one-time setup)
-ln -s ~/dev/splunk-apps/dash $SPLUNK_HOME/etc/apps/dash
+ln -s ~/dev/splunk-apps/cimdg $SPLUNK_HOME/etc/apps/cimdg
 
 # After symlinking, file changes are live instantly in Splunk
 # To reload without a full restart:
 splunk reload apps
 # Or via REST API (faster):
-curl -k -u admin:password https://localhost:8089/services/apps/local/dash/_reload -X POST
+curl -k -u admin:password https://localhost:8089/services/apps/local/cimdg/_reload -X POST
 
 # View the app at:
-# http://localhost:8000/en-US/app/dash
+# http://localhost:8000/en-US/app/cimdg
 ```
 
 ## Validation & Testing
 
 ```bash
 # AppInspect validation (required before release)
-splunk-appinspect inspect ~/dev/splunk-apps/dash --mode precert
+splunk-appinspect inspect ~/dev/splunk-apps/cimdg --mode precert
 
 # AppInspect with output file for detailed review
-splunk-appinspect inspect . --mode precert --output-file /tmp/report.json
+splunk-appinspect inspect . --mode precert --output-file /tmp/appinspect_report.json
 
 # XML syntax validation
-xmllint --noout local/data/ui/views/builder.xml
+find default/data/ui/views -name "*.xml" -exec xmllint --noout {} \;
 
-# Unit tests (currently empty, future use)
+# Python syntax check
+python3 -m py_compile bin/cim_generator_modinput.py
+python3 -m py_compile bin/cim_generator_command.py
+
+# Unit tests
 pytest tests/
 
 # Clean install test (before releases)
@@ -48,27 +52,33 @@ mv local.backup local/ && splunk restart
 
 1. Update version in `default/app.conf`, `app.manifest`, and `CHANGELOG.md`
 2. Update `CHANGELOG.md` (move Unreleased → Versioned section)
-3. Commit and merge develop → prod (`dash-develop` → `dash-prod` or `lite-develop` → `lite-prod`)
+3. Commit and merge develop → prod (`cimdg-develop` → `cimdg-prod`)
 4. Tag on the prod branch:
-   - Full DASH: `git tag -a v1.1.0 -m "Release version 1.1.0" && git push origin v1.1.0`
-   - DASH Lite: `git tag -a lite-v1.0.0 -m "Release DASH Lite version 1.0.0" && git push origin lite-v1.0.0`
+   ```bash
+   git tag -a v1.0.0 -m "Release version 1.0.0" && git push origin v1.0.0
+   ```
 
-GitHub Actions automatically packages the `.spl` and creates a GitHub Release on tag push. The workflow validates that the tag variant matches the `[package] id` in `app.conf` — tagging the wrong branch will fail early.
+GitHub Actions automatically packages the `.spl` and creates a GitHub Release on tag push.
 
 ## Architecture
 
 ### Splunk App Structure
 
-- `default/` — Committed default configs (app.conf, navigation). These ship with the app.
-- `local/` — Developer/user-specific configs (views, collections.conf, transforms.conf). **Not in Git** — these are the actual view files during development.
+- `default/` — Committed default configs (app.conf, inputs.conf, props.conf, etc.). These ship with the app.
+- `local/` — Developer/user-specific configs (views, inputs overrides). **Not in Git** — for development only.
 - `appserver/static/` — JavaScript and CSS served by Splunk's web framework.
-- `lookups/` — Sample CSV data (legacy, used by gallery view).
-- `bin/` — Python REST handlers and use case dashboard definitions.
+- `bin/` — Python modular input, custom search command, REST handlers, and generators.
+- `bin/generators/` — One Python module per CIM data model (authentication.py, network_traffic.py, etc.).
+- `bin/templates/` — JSON schema files defining fields, types, value pools, weights, and dependencies per CIM model.
+- `lookups/` — CSV lookups for severity mappings, vendor products, etc.
+- `metadata/` — App permissions (default.meta uses `sc_admin` for Cloud compatibility).
+- `README/` — inputs.conf.spec for modular input parameter docs.
+- `static/` — App icons (appIcon.png, appIcon_2x.png).
 
 ### Promotion Rules (local/ → default/)
 Before committing, promote stable configs from `local/` to `default/`:
-- **Safe to promote:** `data/ui/views/*.xml`, `data/ui/nav/default.xml`, `collections.conf`, `transforms.conf`
-- **Never promote:** `local.meta`, `app.conf`, `authentication.conf`, `passwords.conf`, `server.conf`
+- **Safe to promote:** `data/ui/views/*.xml`, `data/ui/nav/default.xml`, `props.conf`, `transforms.conf`, `eventtypes.conf`, `tags.conf`, `collections.conf`, `savedsearches.conf`, `macros.conf`
+- **Never promote:** `local.meta`, `app.conf`, `authentication.conf`, `passwords.conf`, `server.conf`, `inputs.conf` (user-specific input stanzas)
 
 If you find any files other than those on the safe list that could be promoted, including those listed in the "Never promote" list, please identify them so the user can determine whether there are exceptions.
 
@@ -76,70 +86,91 @@ If you find any files other than those on the safe list that could be promoted, 
 
 | File | Purpose |
 |------|---------|
-| `default/data/ui/views/builder.xml` | Main builder dashboard (Simple XML) |
-| `appserver/static/js/builder.js` | Builder logic — dynamic preview engine, carousel, style manager |
-| `appserver/static/js/use_cases.js` | AMD module: 15 dashboard definitions (3 use cases × 5 dashboards) |
-| `appserver/static/css/preview.css` | CSS variables for the live preview panel |
-| `appserver/static/css/builder.css` | Styling for the builder UI chrome and carousel |
-| `bin/create_app_handler.py` | REST handler for generating styled Splunk apps from the Builder |
-| `bin/gallery_handler.py` | REST handler for Gallery — save, delete (single + bulk), clone, and create apps from gallery items |
-| `bin/app_builder.py` | Shared app-building logic (used by both create_app and gallery handlers) |
-| `bin/use_case_dashboards.py` | Python mirror of use_cases.js for Simple XML generation |
-| `default/data/ui/views/gallery.xml` | Gallery dashboard (Simple XML) |
-| `appserver/static/js/gallery.js` | Gallery logic — card rendering, create/customize/delete/bulk-delete actions |
-| `appserver/static/css/gallery.css` | Styling for the gallery card grid and mini-previews |
-| `default/collections.conf` | KV Store collection definition (`gallery_items`) |
-| `default/transforms.conf` | Maps `gallery_items` lookup to KV Store |
+| `bin/cim_generator_modinput.py` | Modular input for continuous streaming (inherits `splunklib.modularinput.Script`) |
+| `bin/cim_generator_command.py` | Custom generating search command (`| cimgenerate model=X count=N`) |
+| `bin/cim_generator_rest_handler.py` | REST handler for dashboard integration (start/stop, batch trigger) |
+| `bin/generators/base.py` | Base generator: entity pools, field generation, cross-model correlation |
+| `bin/generators/authentication.py` | Authentication data model generator |
+| `bin/generators/network_traffic.py` | Network Traffic data model generator |
+| `bin/generators/web.py` | Web data model generator |
+| `bin/generators/endpoint.py` | Endpoint data model generator (Processes, Filesystem, Registry, Services, Ports) |
+| `bin/templates/*.json` | JSON schemas per CIM model (fields, values, weights, dependencies) |
+| `default/inputs.conf` | Modular input stanzas (all disabled=1 by default) |
+| `default/props.conf` | Sourcetype definitions with `KV_MODE = json` for CIM field extraction |
+| `default/eventtypes.conf` | Event types matching each `synthetic:*` sourcetype |
+| `default/tags.conf` | CIM tags applied to event types |
+| `default/commands.conf` | Custom search command registration (`cimgenerate`) |
+| `default/restmap.conf` | REST endpoint registration for dashboard integration |
+| `default/data/ui/views/generator_config.xml` | Generator Configuration dashboard (SimpleXML form) |
+| `default/data/ui/views/generation_status.xml` | Generation Status & Volume Monitor (Dashboard Studio) |
+| `default/data/ui/views/cim_validation.xml` | CIM Validation dashboard (Dashboard Studio) |
 
 ### How It Works
 
-1. `builder.xml` is a Splunk Simple XML dashboard that loads `builder.js` and `use_cases.js` via Require.js
-2. Users select a use case (Cybersecurity, IT Ops, APM) and navigate 5 dashboards via a carousel
-3. `builder.js` dynamically creates `SearchManager` + `ChartView`/`TableView`/`SingleView` instances from `use_cases.js` definitions — all searches use `makeresults` (no CSV dependencies)
-4. The Style Manager form collects CSS variable values (colors, fonts, logos) and applies them to the live preview via `preview.css`
-5. "Create Styled App" sends the style config + selected use case to `create_app_handler.py`, which generates 5 Simple XML dashboards using `use_case_dashboards.py`
-6. "Save to Gallery" sends the style config + images to `gallery_handler.py`, which stores them in the `gallery_items` KV Store collection and saves images to disk
-7. The Gallery page (`gallery.js`) loads items from KV Store and MB2 inspirations from `inspirations.json`, letting users create apps, customize styles, or delete items
-8. Backbone.js `ModalView` (in `appserver/static/lib/modal-view.js`) powers the Gallery actions and app creation dialogs
+1. **Continuous mode**: Modular input (`cim_generator_modinput.py`) streams events at configured intervals. Each stanza specifies data model, EPS, target index, and optional value overrides.
+2. **Batch mode**: Custom search command (`| cimgenerate model="Authentication" count=10000 timerange="-24h"`) generates on-demand, pipeable to `| collect`.
+3. **Generation pipeline**: `GeneratorFactory` → model-specific generator → `BaseGenerator.generate()` → JSON event with CIM-native fields → `EventWriter` or search results.
+4. **CIM compliance chain**: `props.conf` (KV_MODE=json) → `eventtypes.conf` (sourcetype match) → `tags.conf` (CIM tags) → data model constraint captures events.
+5. **Cross-model correlation**: Session correlation engine shares `session_id`, `user`, `src` values across Authentication → Network Traffic → Web events.
+6. **Dashboard integration**: REST handler bridges UI controls to input management (start/stop/adjust) and batch triggers.
 
 ### Splunk-Specific Patterns
 
-- Views use **Require.js AMD** module loading — Splunk's bundled version, not a standalone install
-- Search results flow through **SearchManager → ResultsModel → View** (Splunk MVC pattern)
-- The `local/` directory is excluded from Git and AppInspect packaging — configs there are for development only; views intended for distribution must eventually be moved to `default/`
-- KV Store access uses `splunkjs` SDK calls, not direct REST
+- **Modular inputs** over scripted inputs — required for Cloud compatibility (native UI config, auto-REST, credential management)
+- **Sourcetype convention**: `synthetic:<model_name>` (e.g., `synthetic:authentication`, `synthetic:network_traffic`)
+- **Dedicated index**: `synthetic_cim` with 7-day retention (Enterprise only; document manual creation for Cloud)
+- **Events are born CIM-compliant**: JSON payload uses CIM field names directly (action, user, src, dest) — minimal aliasing needed
+- **Python stdlib only**: No third-party libraries — `random`, `ipaddress`, `datetime`, `json`, `string`, `os`
+- **All inputs ship disabled**: `disabled = 1` in every `default/inputs.conf` stanza
+- **Rate limiting**: Hard ceiling of 1000 EPS configurable in the generator
+- Views use **Require.js AMD** module loading — Splunk's bundled version
+- The `local/` directory is excluded from Git and AppInspect packaging
+
+### Cloud Compatibility
+
+- No `indexes.conf` in Cloud-targeted packages (document manual index creation)
+- No `limits.conf`
+- `sc_admin` in all metadata references (never `admin`)
+- `python.version = python3` in `commands.conf`, `inputs.conf`, `restmap.conf`
+- All files 644, directories 755
+- `enableSched = 0` for scheduled searches by default
+- Package under 128MB
+
+### CIM Data Models Supported
+
+**MVP (v0.1)**: Authentication, Network Traffic, Web, Endpoint (Processes), Malware, Intrusion Detection, DNS
+
+**v1.0**: + Vulnerabilities, Change, Email, Network Sessions, Alerts, DLP, Certificates, Endpoint (Filesystem, Registry, Services, Ports), Updates
+
+**v1.5**: + Performance, JVM, Databases, Inventory, Ticket Management, Interprocess Messaging, Splunk Audit Logs
 
 ## Branching & Commits
 
-- `dash-prod` — DASH full version production releases
-- `dash-develop` — DASH full version daily integration
-- `lite-prod` — DASH Lite production releases
-- `lite-develop` — DASH Lite daily integration
-- `feature/*`, `bugfix/*` — Branch from the relevant develop branch; `hotfix/*` — Branch from the relevant prod branch
+- `cimdg-prod` — Production releases
+- `cimdg-develop` — Daily integration
+- `feature/*`, `bugfix/*` — Branch from `cimdg-develop`; `hotfix/*` — Branch from `cimdg-prod`
 
 ### Cross-Branch File Sync
 
-Shared infrastructure files must be kept in sync across all four branches (`dash-develop`, `dash-prod`, `lite-develop`, `lite-prod`). When any of these files are modified, cherry-pick or copy the changes to all other branches:
+Shared infrastructure files must be kept in sync across both branches (`cimdg-develop`, `cimdg-prod`). When any of these files are modified, cherry-pick or copy the changes to the other branch:
 
-- `.github/workflows/` — CI/CD workflows (unified for both variants)
+- `.github/workflows/` — CI/CD workflows
 - `CLAUDE.md` — Development guidelines
 - `.claude/` — Skills, commands, settings
 
-App-specific files (views, JS, CSS, Python handlers, configs) stay branch-specific — they differ between full DASH and DASH Lite.
-
 ### Release Tags
 
-| Variant | Tag pattern | Example | Triggers |
-|---------|------------|---------|----------|
-| Full DASH | `v*.*.*` | `v1.1.0` | Release workflow → `dash-1.1.0.spl` |
-| DASH Lite | `lite-v*.*.*` | `lite-v1.0.0` | Release workflow → `dash_lite-1.0.0.spl` |
+| Tag pattern | Example | Triggers |
+|------------|---------|----------|
+| `v*.*.*` | `v1.0.0` | Release workflow → `cimdg-1.0.0.spl` |
 
-Versions in `app.conf` and `app.manifest` must be numeric-only (`1.0.0`, not `1.0.0-lite`) — Splunkbase requires strict `Major.Minor.Revision` format.
+Versions in `app.conf` and `app.manifest` must be numeric-only (`1.0.0`) — Splunkbase requires strict `Major.Minor.Revision` format.
 
 Commit format (Conventional Commits):
 ```
-feat(builder): Add drag-and-drop panel reordering
-fix(gallery): Resolve dashboard preview loading issue
+feat(generator): Add Network Traffic data model support
+fix(modinput): Resolve event timestamp precision issue
+feat(dashboard): Add CIM validation panel
 docs: Update installation instructions
 ```
 
@@ -147,11 +178,16 @@ docs: Update installation instructions
 
 ```bash
 # Tail Splunk logs filtered to this app
-tail -f $SPLUNK_HOME/var/log/splunk/splunkd.log | grep -i dash
+tail -f $SPLUNK_HOME/var/log/splunk/splunkd.log | grep -i cim_generator
+
+# Check modular input logs
+tail -f $SPLUNK_HOME/var/log/splunk/splunkd.log | grep -i "cim_synthetic"
 
 # JS errors appear in browser DevTools console (F12)
 ```
 
-**App not showing / changes not appearing:** Check symlink (`ls -la $SPLUNK_HOME/etc/apps/ | grep dash`), run `splunk reload apps`, and hard-refresh the browser (Ctrl+Shift+R).
+**App not showing / changes not appearing:** Check symlink (`ls -la $SPLUNK_HOME/etc/apps/ | grep cimdg`), run `splunk reload apps`, and hard-refresh the browser (Ctrl+Shift+R).
 
-**AppInspect failures:** Common causes are missing `app.manifest` fields, hardcoded credentials, or `eval()` usage in JS.
+**AppInspect failures:** Common causes are missing `app.manifest` fields, hardcoded credentials, `eval()` usage in JS, or missing `python.version = python3`.
+
+**Generated data not appearing in CIM model:** Check the chain: `props.conf` (sourcetype defined?) → `eventtypes.conf` (eventtype matches sourcetype?) → `tags.conf` (CIM tags applied?) → verify with `| datamodel <Model> search | head 10`.
