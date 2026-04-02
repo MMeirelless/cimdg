@@ -1,3 +1,32 @@
 []
 access = read : [ * ], write : [ admin, sc_admin ]
 export = system
+
+[eventtypes]
+export = system
+
+[props]
+export = system
+
+[transforms]
+export = system
+
+[tags]
+export = system
+
+[commands]
+export = system
+
+[restmap]
+export = system
+
+[web]
+export = system
+
+[views]
+access = read : [ * ], write : [ admin, sc_admin ]
+export = system
+
+[inputs]
+access = read : [ * ], write : [ admin, sc_admin ]
+export = none

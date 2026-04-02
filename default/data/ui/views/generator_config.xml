@@ -1,0 +1,163 @@
+<form version="1.1" script="js/generator_config.js">
+  <label>Generator Configuration</label>
+  <description>Configure and generate CIM-compliant synthetic data</description>
+
+  <fieldset submitButton="false">
+    <input type="dropdown" token="selected_model" searchWhenChanged="true">
+      <label>CIM Data Model</label>
+      <choice value="authentication">Authentication</choice>
+      <choice value="network_traffic">Network Traffic</choice>
+      <choice value="web">Web</choice>
+      <choice value="endpoint">Endpoint (Processes)</choice>
+      <choice value="malware">Malware</choice>
+      <choice value="intrusion_detection">Intrusion Detection</choice>
+      <choice value="dns">DNS (Network Resolution)</choice>
+      <default>authentication</default>
+      <initialValue>authentication</initialValue>
+    </input>
+
+    <input type="text" token="event_count">
+      <label>Number of Events</label>
+      <default>100</default>
+      <initialValue>100</initialValue>
+    </input>
+
+    <input type="dropdown" token="timerange" searchWhenChanged="true">
+      <label>Time Range</label>
+      <choice value="-5m">Last 5 minutes</choice>
+      <choice value="-15m">Last 15 minutes</choice>
+      <choice value="-1h">Last 1 hour</choice>
+      <choice value="-4h">Last 4 hours</choice>
+      <choice value="-24h">Last 24 hours</choice>
+      <choice value="-7d">Last 7 days</choice>
+      <default>-1h</default>
+      <initialValue>-1h</initialValue>
+    </input>
+
+    <input type="dropdown" token="target_index" searchWhenChanged="true">
+      <label>Target Index</label>
+      <search>
+        <query>| rest /services/data/indexes | search disabled=0 | table title | sort title</query>
+      </search>
+      <fieldForLabel>title</fieldForLabel>
+      <fieldForValue>title</fieldForValue>
+      <default>synthetic_cim</default>
+      <initialValue>synthetic_cim</initialValue>
+    </input>
+  </fieldset>
+
+  <!-- Row 1: Generate & Index (via JS + REST) -->
+  <row>
+    <panel>
+      <title>On-Demand Generation</title>
+      <html>
+        <div style="padding: 15px;">
+          <p style="margin-bottom: 15px;">
+            Generate <b>$event_count$</b> <b>$selected_model$</b> events
+            spread across <b>$timerange$</b> into index <b>$target_index$</b>.
+          </p>
+          <button id="btn_generate_index" class="btn btn-primary" style="font-size: 14px; padding: 8px 24px;">
+            Generate &amp; Index
+          </button>
+          <div id="generate_status_wrap" style="display: none;">
+            <span id="generate_status"></span>
+          </div>
+          <p style="color: #999; font-size: 12px; margin-top: 12px;">
+            Events are generated and indexed server-side via the REST handler.
+            Use the preview below to inspect sample events before indexing.
+          </p>
+        </div>
+      </html>
+    </panel>
+  </row>
+
+  <!-- Row 2: Preview Generated Events -->
+  <row>
+    <panel>
+      <title>Preview: $selected_model$ Events (first 10)</title>
+      <table>
+        <search>
+          <query>| cimgenerate model="$selected_model$" count=10 timerange="$timerange$"
+| table _time action user src dest *</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+
+  <!-- Row 3: Active Modular Inputs -->
+  <row>
+    <panel>
+      <title>Active Continuous Generators</title>
+      <table>
+        <search>
+          <query>| rest /services/data/inputs/cim_synthetic_data
+| table title, content.model, content.events_per_interval, content.index, content.interval, disabled
+| rename title as "Input Name", content.model as "Model", content.events_per_interval as "Events/Interval", content.index as "Index", content.interval as "Interval (s)"
+| sort disabled, "Input Name"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+
+  <!-- Row 4: Recent Generated Data -->
+  <row>
+    <panel>
+      <title>Recent Generated Events (last 1 hour)</title>
+      <chart>
+        <search>
+          <query>index=synthetic_cim earliest=-1h
+| timechart span=5m count by sourcetype</query>
+          <earliest>-1h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.axisTitleX.text">Time</option>
+        <option name="charting.axisTitleY.text">Events</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Events by Model</title>
+      <chart>
+        <search>
+          <query>index=synthetic_cim earliest=-1h
+| stats count by sourcetype
+| sort -count</query>
+          <earliest>-1h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+  </row>
+
+  <!-- Row 5: CIM Compliance Quick Check -->
+  <row>
+    <panel>
+      <title>CIM Compliance Check: $selected_model$</title>
+      <table>
+        <search>
+          <query>| cimgenerate model="$selected_model$" count=5 timerange="-1h"
+| foreach * [eval field_check=if(isnotnull('&lt;&lt;FIELD&gt;&gt;'), "present", "missing")]
+| stats values(*) as * | transpose
+| rename column as "Field", "row 1" as "Sample Value"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">50</option>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</form>

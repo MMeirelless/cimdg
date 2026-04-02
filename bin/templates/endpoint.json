@@ -1,0 +1,121 @@
+{
+  "model": "Endpoint",
+  "sourcetype": "synthetic:endpoint_processes",
+  "tags": ["process", "report"],
+  "fields": {
+    "action": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "allowed", "weight": 95},
+        {"value": "blocked", "weight": 5}
+      ]
+    },
+    "dest": {"type": "hostname"},
+    "process": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "svchost.exe", "weight": 15},
+        {"value": "cmd.exe", "weight": 10},
+        {"value": "powershell.exe", "weight": 10},
+        {"value": "explorer.exe", "weight": 8},
+        {"value": "chrome.exe", "weight": 8},
+        {"value": "python3", "weight": 7},
+        {"value": "java", "weight": 5},
+        {"value": "splunkd", "weight": 5},
+        {"value": "nginx", "weight": 5},
+        {"value": "httpd", "weight": 4},
+        {"value": "bash", "weight": 4},
+        {"value": "node", "weight": 4},
+        {"value": "postgres", "weight": 3},
+        {"value": "mysqld", "weight": 3},
+        {"value": "cron", "weight": 3},
+        {"value": "systemd", "weight": 3},
+        {"value": "conhost.exe", "weight": 3}
+      ]
+    },
+    "process_id": {"type": "process_id"},
+    "process_name": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "svchost.exe", "weight": 15},
+        {"value": "cmd.exe", "weight": 10},
+        {"value": "powershell.exe", "weight": 10},
+        {"value": "explorer.exe", "weight": 8},
+        {"value": "chrome.exe", "weight": 8},
+        {"value": "python3", "weight": 7},
+        {"value": "java", "weight": 5},
+        {"value": "splunkd", "weight": 5},
+        {"value": "nginx", "weight": 5},
+        {"value": "httpd", "weight": 4},
+        {"value": "bash", "weight": 4},
+        {"value": "node", "weight": 4},
+        {"value": "postgres", "weight": 3},
+        {"value": "mysqld", "weight": 3},
+        {"value": "cron", "weight": 3},
+        {"value": "systemd", "weight": 3},
+        {"value": "conhost.exe", "weight": 3}
+      ]
+    },
+    "parent_process": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "services.exe", "weight": 25},
+        {"value": "explorer.exe", "weight": 20},
+        {"value": "svchost.exe", "weight": 15},
+        {"value": "cmd.exe", "weight": 10},
+        {"value": "init", "weight": 10},
+        {"value": "systemd", "weight": 10},
+        {"value": "bash", "weight": 5},
+        {"value": "cron", "weight": 5}
+      ]
+    },
+    "parent_process_id": {"type": "process_id"},
+    "parent_process_name": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "services.exe", "weight": 25},
+        {"value": "explorer.exe", "weight": 20},
+        {"value": "svchost.exe", "weight": 15},
+        {"value": "cmd.exe", "weight": 10},
+        {"value": "init", "weight": 10},
+        {"value": "systemd", "weight": 10},
+        {"value": "bash", "weight": 5},
+        {"value": "cron", "weight": 5}
+      ]
+    },
+    "process_path": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "C:\\Windows\\System32\\svchost.exe", "weight": 15},
+        {"value": "C:\\Windows\\System32\\cmd.exe", "weight": 10},
+        {"value": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "weight": 10},
+        {"value": "C:\\Windows\\explorer.exe", "weight": 8},
+        {"value": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", "weight": 8},
+        {"value": "/usr/bin/python3", "weight": 7},
+        {"value": "/usr/bin/java", "weight": 5},
+        {"value": "/opt/splunk/bin/splunkd", "weight": 5},
+        {"value": "/usr/sbin/nginx", "weight": 5},
+        {"value": "/usr/sbin/httpd", "weight": 4},
+        {"value": "/bin/bash", "weight": 4},
+        {"value": "/usr/bin/node", "weight": 4},
+        {"value": "/usr/lib/postgresql/14/bin/postgres", "weight": 3},
+        {"value": "/usr/sbin/mysqld", "weight": 3},
+        {"value": "/usr/sbin/cron", "weight": 3},
+        {"value": "/lib/systemd/systemd", "weight": 3},
+        {"value": "C:\\Windows\\System32\\conhost.exe", "weight": 3}
+      ]
+    },
+    "user": {"type": "username"},
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "Microsoft Sysmon", "weight": 30},
+        {"value": "CrowdStrike Falcon", "weight": 25},
+        {"value": "Carbon Black Response", "weight": 20},
+        {"value": "Symantec Endpoint Protection", "weight": 15},
+        {"value": "osquery", "weight": 10}
+      ]
+    }
+  },
+  "dependencies": {}
+}

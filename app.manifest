@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "2.0.0",
+  "info": {
+    "title": "CIM Data Generator",
+    "id": {
+      "group": null,
+      "name": "cimdg",
+      "version": "1.0.0"
+    },
+    "author": [
+      {
+        "name": "MB2 Analytics",
+        "email": "matheus@mb2analytics.com",
+        "company": "MB2 Analytics"
+      }
+    ],
+    "releaseDate": null,
+    "description": "CIM-native synthetic data generator for Splunk. Generate dynamic sample data mapped to Splunk CIM data models for testing searches, dashboards, and correlation rules without production data.",
+    "classification": {
+      "intendedAudience": "IT Security",
+      "categories": ["Security, Fraud & Compliance", "Utilities"],
+      "developmentStatus": "Production/Stable"
+    },
+    "commonInformationModels": {
+      "Authentication": ">=4.0.0",
+      "Network Traffic": ">=4.0.0",
+      "Web": ">=4.0.0",
+      "Endpoint": ">=4.0.0",
+      "Malware": ">=4.0.0",
+      "Intrusion Detection": ">=4.0.0",
+      "Network Resolution (DNS)": ">=4.0.0"
+    },
+    "license": {
+      "name": "Proprietary",
+      "text": "LICENSE.txt",
+      "uri": "https://mb2analytics.com/license"
+    }
+  },
+  "dependencies": {
+    "Splunk_SA_CIM": {
+      "version": ">=5.0.0",
+      "optional": true
+    }
+  },
+  "tasks": [],
+  "inputGroups": {},
+  "incompatibleApps": {},
+  "platformRequirements": {
+    "splunk": {
+      "Enterprise": ">=9.1"
+    }
+  },
+  "supportedDeployments": ["_standalone", "_distributed", "_search_head_clustering"],
+  "targetWorkloads": ["_search_heads"]
+}
