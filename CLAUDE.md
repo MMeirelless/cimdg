@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-CIM Data Generator (CIMDG) is a Splunk app (v1.0.0) — the first CIM-native synthetic data generator for Splunk. Users select CIM data models (Authentication, Network Traffic, Web, Endpoint, etc.) and generate synthetic events that are born CIM-compliant with correct fields, tags, and values — no Technology Add-on required. The app supports two generation modes: continuous streaming via modular inputs and on-demand batch generation via a custom search command (`| cimgenerate`). It uses Splunk's Simple XML for the configuration dashboard and Dashboard Studio for monitoring/validation dashboards. All Python code runs on Splunk's built-in Python 3 interpreter with stdlib only — no third-party dependencies.
+CIM Data Generator (CIMDG) is a Splunk app (v1.0.0) — the first CIM-native synthetic data generator for Splunk. Users select CIM data models (Authentication, Network Traffic, Web, Endpoint, etc.) and generate synthetic events that are born CIM-compliant with correct fields, tags, and values — no Technology Add-on required. The app supports two generation modes: continuous streaming via modular inputs and on-demand batch generation via a custom search command (`| cimgenerate`). All dashboards use Splunk's classic SimpleXML framework. All Python code runs on Splunk's built-in Python 3 interpreter with stdlib only — no third-party dependencies.
 
 ## Development Setup
 
@@ -102,8 +102,8 @@ If you find any files other than those on the safe list that could be promoted, 
 | `default/commands.conf` | Custom search command registration (`cimgenerate`) |
 | `default/restmap.conf` | REST endpoint registration for dashboard integration |
 | `default/data/ui/views/generator_config.xml` | Generator Configuration dashboard (SimpleXML form) |
-| `default/data/ui/views/generation_status.xml` | Generation Status & Volume Monitor (Dashboard Studio) |
-| `default/data/ui/views/cim_validation.xml` | CIM Validation dashboard (Dashboard Studio) |
+| `default/data/ui/views/generation_status.xml` | Generation Status & Volume Monitor (SimpleXML) |
+| `default/data/ui/views/cim_validation.xml` | CIM Validation dashboard (SimpleXML form) |
 
 ### How It Works
 
@@ -117,7 +117,7 @@ If you find any files other than those on the safe list that could be promoted, 
 ### Splunk-Specific Patterns
 
 - **Modular inputs** over scripted inputs — required for Cloud compatibility (native UI config, auto-REST, credential management)
-- **Sourcetype convention**: `synthetic:<model_name>` (e.g., `synthetic:authentication`, `synthetic:network_traffic`)
+- **Sourcetype convention**: `cimdg:synthetic:<model_name>` (e.g., `cimdg:synthetic:authentication`, `cimdg:synthetic:network_traffic`)
 - **Dedicated index**: `synthetic_cim` with 7-day retention (Enterprise only; document manual creation for Cloud)
 - **Events are born CIM-compliant**: JSON payload uses CIM field names directly (action, user, src, dest) — minimal aliasing needed
 - **Python stdlib only**: No third-party libraries — `random`, `ipaddress`, `datetime`, `json`, `string`, `os`
@@ -125,6 +125,12 @@ If you find any files other than those on the safe list that could be promoted, 
 - **Rate limiting**: Hard ceiling of 1000 EPS configurable in the generator
 - Views use **Require.js AMD** module loading — Splunk's bundled version
 - The `local/` directory is excluded from Git and AppInspect packaging
+
+### Dashboard Rules
+
+- **Always use classic SimpleXML** (`<dashboard version="1.1">` or `<form version="1.1">`). **Never use Dashboard Studio** (JSON-based `<definition>` / `version="2"` dashboards).
+- **Never use risky SPL commands directly in dashboard XML searches.** These trigger SPL safeguards and show "risky commands" warnings to users. The prohibited commands are: `collect`, `delete`, `dump`, `map`, `mcollect`, `meventcollect`, `outputcsv`, `outputlookup`, `run`, `runshellscript`, `script`, `sendalert`, `sendemail`, `tscollect`.
+- When a dashboard needs to execute a risky command (e.g., `| collect` for indexing or `| delete` for purging), trigger it **server-side** via a JavaScript file imported with `script=` that calls a custom REST endpoint using `$.ajax()`. See `appserver/static/js/generator_config.js` and `bin/cim_generate_handler.py` for the established pattern.
 
 ### Cloud Compatibility
 
