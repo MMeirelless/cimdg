@@ -1,0 +1,187 @@
+{
+  "model": "Certificates",
+  "sourcetype": "cimdg:synthetic:certificates",
+  "tags": [
+    "certificate"
+  ],
+  "fields": {
+    "ssl_serial": {
+      "type": "certificate_serial"
+    },
+    "ssl_end_time": {
+      "type": "timestamp_future",
+      "min_days": -30,
+      "max_days": 730
+    },
+    "ssl_start_time": {
+      "type": "timestamp_future",
+      "min_days": -730,
+      "max_days": -1
+    },
+    "ssl_issuer": {
+      "type": "certificate_subject"
+    },
+    "ssl_subject": {
+      "type": "certificate_subject"
+    },
+    "ssl_issuer_common_name": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "DigiCert SHA2 Extended Validation Server CA",
+          "weight": 20
+        },
+        {
+          "value": "Let's Encrypt Authority X3",
+          "weight": 25
+        },
+        {
+          "value": "Sectigo RSA Domain Validation Secure Server CA",
+          "weight": 15
+        },
+        {
+          "value": "GlobalSign RSA OV SSL CA 2018",
+          "weight": 10
+        },
+        {
+          "value": "GoDaddy Secure Certificate Authority - G2",
+          "weight": 10
+        },
+        {
+          "value": "Entrust Certification Authority - L1K",
+          "weight": 10
+        },
+        {
+          "value": "Self-Signed",
+          "weight": 10
+        }
+      ]
+    },
+    "ssl_subject_common_name": {
+      "type": "external_domain"
+    },
+    "ssl_version": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "TLSv1.3",
+          "weight": 40
+        },
+        {
+          "value": "TLSv1.2",
+          "weight": 50
+        },
+        {
+          "value": "TLSv1.1",
+          "weight": 5
+        },
+        {
+          "value": "TLSv1.0",
+          "weight": 5
+        }
+      ]
+    },
+    "ssl_signature_algorithm": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "sha256WithRSAEncryption",
+          "weight": 50
+        },
+        {
+          "value": "sha384WithRSAEncryption",
+          "weight": 15
+        },
+        {
+          "value": "ecdsa-with-SHA256",
+          "weight": 20
+        },
+        {
+          "value": "sha256WithECDSAEncryption",
+          "weight": 10
+        },
+        {
+          "value": "sha1WithRSAEncryption",
+          "weight": 5
+        }
+      ]
+    },
+    "ssl_key_length": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "2048",
+          "weight": 40
+        },
+        {
+          "value": "4096",
+          "weight": 30
+        },
+        {
+          "value": "256",
+          "weight": 20
+        },
+        {
+          "value": "384",
+          "weight": 10
+        }
+      ]
+    },
+    "ssl_is_valid": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "true",
+          "weight": 90
+        },
+        {
+          "value": "false",
+          "weight": 10
+        }
+      ]
+    },
+    "dest": {
+      "type": "dest_ip"
+    },
+    "src": {
+      "type": "src_ip"
+    },
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "Splunk Stream",
+          "weight": 25
+        },
+        {
+          "value": "Palo Alto Networks",
+          "weight": 20
+        },
+        {
+          "value": "F5 BIG-IP",
+          "weight": 15
+        },
+        {
+          "value": "Venafi",
+          "weight": 15
+        },
+        {
+          "value": "Qualys SSL Labs",
+          "weight": 15
+        },
+        {
+          "value": "DigiCert CertCentral",
+          "weight": 10
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "ssl_is_valid=false": {
+      "ssl_issuer_common_name": {
+        "type": "static",
+        "value": "Self-Signed"
+      }
+    }
+  }
+}

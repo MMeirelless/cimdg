@@ -1,0 +1,93 @@
+{
+  "model": "Endpoint Filesystem",
+  "sourcetype": "cimdg:synthetic:endpoint_filesystem",
+  "tags": [
+    "endpoint",
+    "filesystem"
+  ],
+  "fields": {
+    "action": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "created",
+          "weight": 30
+        },
+        {
+          "value": "modified",
+          "weight": 40
+        },
+        {
+          "value": "deleted",
+          "weight": 15
+        },
+        {
+          "value": "read",
+          "weight": 10
+        },
+        {
+          "value": "acl_modified",
+          "weight": 5
+        }
+      ]
+    },
+    "dest": {
+      "type": "hostname"
+    },
+    "file_name": {
+      "type": "file_name",
+      "extensions": [
+        ".docx",
+        ".xlsx",
+        ".pdf",
+        ".txt",
+        ".log",
+        ".conf",
+        ".exe",
+        ".dll",
+        ".tmp",
+        ".bak"
+      ]
+    },
+    "file_path": {
+      "type": "file_path"
+    },
+    "file_hash": {
+      "type": "md5_hash"
+    },
+    "file_size": {
+      "type": "file_size",
+      "min": 100,
+      "max": 10000000
+    },
+    "user": {
+      "type": "username"
+    },
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "Microsoft Sysmon",
+          "weight": 30
+        },
+        {
+          "value": "CrowdStrike Falcon",
+          "weight": 25
+        },
+        {
+          "value": "Carbon Black Response",
+          "weight": 20
+        },
+        {
+          "value": "osquery",
+          "weight": 15
+        },
+        {
+          "value": "Wazuh",
+          "weight": 10
+        }
+      ]
+    }
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,51 @@
+{
+  "model": "Event Signatures",
+  "sourcetype": "cimdg:synthetic:event_signatures",
+  "tags": ["track_event", "signature"],
+  "fields": {
+    "signature": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "User Login", "weight": 20},
+        {"value": "Firewall Rule Match", "weight": 15},
+        {"value": "Application Error", "weight": 10},
+        {"value": "Service Started", "weight": 10},
+        {"value": "Configuration Changed", "weight": 10},
+        {"value": "Backup Completed", "weight": 8},
+        {"value": "Certificate Renewal", "weight": 5},
+        {"value": "Threshold Exceeded", "weight": 7},
+        {"value": "Scheduled Task Executed", "weight": 8},
+        {"value": "Policy Violation Detected", "weight": 7}
+      ]
+    },
+    "signature_id": {"type": "number", "min": 1000, "max": 99999},
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "Splunk Enterprise", "weight": 25},
+        {"value": "Microsoft Windows", "weight": 20},
+        {"value": "Linux Syslog", "weight": 20},
+        {"value": "Palo Alto Networks", "weight": 15},
+        {"value": "Cisco IOS", "weight": 10},
+        {"value": "AWS CloudTrail", "weight": 10}
+      ]
+    },
+    "app": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "sshd", "weight": 15},
+        {"value": "httpd", "weight": 15},
+        {"value": "syslog", "weight": 20},
+        {"value": "firewalld", "weight": 10},
+        {"value": "cron", "weight": 10},
+        {"value": "auditd", "weight": 10},
+        {"value": "splunkd", "weight": 10},
+        {"value": "docker", "weight": 10}
+      ]
+    },
+    "dest": {"type": "hostname"},
+    "src": {"type": "src_ip"},
+    "user": {"type": "username"}
+  },
+  "dependencies": {}
+}

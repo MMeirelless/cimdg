@@ -3,6 +3,7 @@
 import random
 
 from generators.base import BaseGenerator, register_generator
+from generators.correlation import SessionManager
 
 
 @register_generator("web")
@@ -53,5 +54,17 @@ class WebGenerator(BaseGenerator):
         event["bytes_in"] = event.get("bytes_in", 0)
         event["bytes_out"] = event.get("bytes_out", 0)
         event["bytes"] = event["bytes_in"] + event["bytes_out"]
+
+        # Cross-model correlation: 25% chance to use active session
+        if random.random() < 0.25:
+            try:
+                session = SessionManager().get_session()
+                if session:
+                    event["session_id"] = session["session_id"]
+                    event["src"] = session["src"]
+                    event["user"] = session["user"]
+                    SessionManager().mark_model(session["session_id"], "web")
+            except Exception:
+                pass
 
         return event

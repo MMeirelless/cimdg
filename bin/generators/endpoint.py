@@ -3,6 +3,7 @@
 import random
 
 from generators.base import BaseGenerator, register_generator
+from generators.correlation import SessionManager
 
 
 # Realistic parent-child process relationships
@@ -76,5 +77,16 @@ class EndpointGenerator(BaseGenerator):
         child_pid = random.randint(parent_pid + 1, 65535)
         event["parent_process_id"] = parent_pid
         event["process_id"] = child_pid
+
+        # Cross-model correlation: 15% chance to use active session
+        if random.random() < 0.15:
+            try:
+                session = SessionManager().get_session()
+                if session:
+                    event["session_id"] = session["session_id"]
+                    event["user"] = session["user"]
+                    SessionManager().mark_model(session["session_id"], "endpoint")
+            except Exception:
+                pass
 
         return event

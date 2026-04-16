@@ -1,0 +1,65 @@
+{
+  "model": "Inventory",
+  "sourcetype": "cimdg:synthetic:inventory",
+  "tags": ["inventory"],
+  "fields": {
+    "dest": {"type": "hostname"},
+    "category": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "server", "weight": 35},
+        {"value": "desktop", "weight": 25},
+        {"value": "virtual_machine", "weight": 25},
+        {"value": "laptop", "weight": 10},
+        {"value": "network_device", "weight": 5}
+      ]
+    },
+    "serial": {"type": "certificate_serial"},
+    "os": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "Ubuntu 22.04 LTS", "weight": 20},
+        {"value": "Red Hat Enterprise Linux 9", "weight": 15},
+        {"value": "CentOS Stream 9", "weight": 10},
+        {"value": "Windows Server 2022", "weight": 20},
+        {"value": "Windows 11 Enterprise", "weight": 15},
+        {"value": "macOS Ventura", "weight": 10},
+        {"value": "VMware ESXi 8.0", "weight": 10}
+      ]
+    },
+    "ip": {"type": "internal_ip"},
+    "mac": {"type": "mac_address"},
+    "dns": {"type": "hostname"},
+    "cpu_cores": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "2", "weight": 15},
+        {"value": "4", "weight": 25},
+        {"value": "8", "weight": 30},
+        {"value": "16", "weight": 20},
+        {"value": "32", "weight": 10}
+      ]
+    },
+    "mem": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "4096", "weight": 10},
+        {"value": "8192", "weight": 20},
+        {"value": "16384", "weight": 30},
+        {"value": "32768", "weight": 25},
+        {"value": "65536", "weight": 15}
+      ]
+    },
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "ServiceNow CMDB", "weight": 25},
+        {"value": "Qualys Asset Inventory", "weight": 20},
+        {"value": "CrowdStrike Falcon Discover", "weight": 20},
+        {"value": "Tenable.io Assets", "weight": 15},
+        {"value": "Splunk IT Asset Discovery", "weight": 20}
+      ]
+    }
+  },
+  "dependencies": {}
+}

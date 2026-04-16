@@ -1,0 +1,41 @@
+{
+  "model": "JVM",
+  "sourcetype": "cimdg:synthetic:jvm",
+  "tags": ["jvm"],
+  "fields": {
+    "dest": {"type": "hostname"},
+    "jvm_description": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "OpenJDK 64-Bit Server VM", "weight": 40},
+        {"value": "Java HotSpot(TM) 64-Bit Server VM", "weight": 30},
+        {"value": "Eclipse OpenJ9 VM", "weight": 15},
+        {"value": "GraalVM CE", "weight": 15}
+      ]
+    },
+    "os_architecture": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "amd64", "weight": 70},
+        {"value": "aarch64", "weight": 30}
+      ]
+    },
+    "thread_count": {"type": "number", "min": 10, "max": 500},
+    "heap_used": {"type": "number", "min": 100, "max": 8000},
+    "heap_max": {"type": "number", "min": 2048, "max": 16384},
+    "loaded_class_count": {"type": "number", "min": 5000, "max": 30000},
+    "system_load_average": {"type": "number", "min": 0, "max": 16, "precision": 2},
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "Apache Tomcat", "weight": 25},
+        {"value": "JBoss/WildFly", "weight": 15},
+        {"value": "Spring Boot", "weight": 25},
+        {"value": "Elasticsearch", "weight": 15},
+        {"value": "Kafka", "weight": 10},
+        {"value": "Splunk Java Agent", "weight": 10}
+      ]
+    }
+  },
+  "dependencies": {}
+}

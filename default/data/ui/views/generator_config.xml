@@ -1,27 +1,68 @@
-<form version="1.1" script="js/generator_config.js">
+<form version="1.1" script="js/generator_config.js" stylesheet="css/brand.css, css/footer.css">
   <label>Generator Configuration</label>
   <description>Configure and generate CIM-compliant synthetic data</description>
 
+  <row>
+    <html>
+      <div class="mb2-appbar">
+        <a href="/app/cimdg" class="mb2-appbar-logo-link">
+          <img src="/static/app/cimdg/mb2/logos/symbol-light.png" alt="MB2" class="mb2-appbar-logo" />
+        </a>
+        <nav class="mb2-appbar-nav">
+          <a href="/app/cimdg/generator_config" class="mb2-appbar-nav-item active">Generator</a>
+          <a href="/app/cimdg/generation_status" class="mb2-appbar-nav-item">Status</a>
+          <a href="/app/cimdg/cim_validation" class="mb2-appbar-nav-item">Validation</a>
+        </nav>
+      </div>
+    </html>
+  </row>
+
+  <!-- Row 0: Active Generator Warning Banner -->
+  <!-- Row 0.5: Attack Scenario Playbooks -->
+  <!-- Row 1: Generate & Index (via JS + REST) -->
+  <!-- Row 2: Preview Generated Events -->
+  <!-- Row 3: Continuous Generators (JS-managed with toggle) -->
+  <!-- Row 4: Recent Generated Data -->
+  <!-- Row 5: CIM Compliance Quick Check -->
   <fieldset submitButton="false">
     <input type="dropdown" token="selected_model" searchWhenChanged="true">
       <label>CIM Data Model</label>
+      <choice value="alerts">Alerts</choice>
       <choice value="authentication">Authentication</choice>
-      <choice value="network_traffic">Network Traffic</choice>
-      <choice value="web">Web</choice>
-      <choice value="endpoint">Endpoint (Processes)</choice>
-      <choice value="malware">Malware</choice>
-      <choice value="intrusion_detection">Intrusion Detection</choice>
+      <choice value="certificates">Certificates</choice>
+      <choice value="change">Change</choice>
+      <choice value="data_access">Data Access</choice>
+      <choice value="databases">Databases</choice>
+      <choice value="dlp">Data Loss Prevention</choice>
       <choice value="dns">DNS (Network Resolution)</choice>
+      <choice value="email">Email</choice>
+      <choice value="endpoint">Endpoint (Processes)</choice>
+      <choice value="endpoint_filesystem">Endpoint (Filesystem)</choice>
+      <choice value="endpoint_ports">Endpoint (Ports)</choice>
+      <choice value="endpoint_registry">Endpoint (Registry)</choice>
+      <choice value="endpoint_services">Endpoint (Services)</choice>
+      <choice value="event_signatures">Event Signatures</choice>
+      <choice value="interprocess_messaging">Interprocess Messaging</choice>
+      <choice value="intrusion_detection">Intrusion Detection</choice>
+      <choice value="inventory">Inventory</choice>
+      <choice value="jvm">JVM</choice>
+      <choice value="malware">Malware</choice>
+      <choice value="network_sessions">Network Sessions</choice>
+      <choice value="network_traffic">Network Traffic</choice>
+      <choice value="performance">Performance</choice>
+      <choice value="splunk_audit">Splunk Audit</choice>
+      <choice value="ticket_management">Ticket Management</choice>
+      <choice value="updates">Updates</choice>
+      <choice value="vulnerabilities">Vulnerabilities</choice>
+      <choice value="web">Web</choice>
       <default>authentication</default>
       <initialValue>authentication</initialValue>
     </input>
-
     <input type="text" token="event_count">
       <label>Number of Events</label>
       <default>100</default>
       <initialValue>100</initialValue>
     </input>
-
     <input type="dropdown" token="timerange" searchWhenChanged="true">
       <label>Time Range</label>
       <choice value="-5m">Last 5 minutes</choice>
@@ -33,20 +74,77 @@
       <default>-1h</default>
       <initialValue>-1h</initialValue>
     </input>
-
     <input type="dropdown" token="target_index" searchWhenChanged="true">
       <label>Target Index</label>
       <search>
-        <query>| rest /services/data/indexes | search disabled=0 | table title | sort title</query>
+        <query>| rest /services/data/indexes
+| search disabled=0 title!=_*
+| table title
+| sort title</query>
       </search>
       <fieldForLabel>title</fieldForLabel>
       <fieldForValue>title</fieldForValue>
       <default>synthetic_cim</default>
       <initialValue>synthetic_cim</initialValue>
     </input>
+    <input type="text" token="pool_size">
+      <label>Pool Size (entities)</label>
+      <default>50</default>
+      <initialValue>50</initialValue>
+    </input>
+    <input type="dropdown" token="external_ratio" searchWhenChanged="true">
+      <label>External IP Ratio</label>
+      <choice value="5">5%</choice>
+      <choice value="10">10%</choice>
+      <choice value="20">20% (default)</choice>
+      <choice value="40">40%</choice>
+      <choice value="60">60%</choice>
+      <default>20</default>
+      <initialValue>20</initialValue>
+    </input>
   </fieldset>
-
-  <!-- Row 1: Generate & Index (via JS + REST) -->
+  <row>
+    <panel>
+      <html>
+        <div id="active_generator_warning" style="display:none; background:#dc4e41; color:#fff; padding:12px 20px; border-radius:4px; font-weight:600; text-align:center;">
+          Data generation is active. Generated data consumes Splunk license.
+          Disable generators when testing is complete.
+        </div>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Attack Scenario Playbooks</title>
+      <html>
+        <div style="padding: 15px;">
+          <p style="font-size: 13px; color: #666; margin-bottom: 12px;">
+            Run a pre-built attack scenario that generates correlated events across multiple CIM models.
+            Events are indexed into <b>$target_index$</b>.
+          </p>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <select id="playbook_select" style="padding: 6px 12px; font-size: 13px; border: 1px solid #ccc; border-radius: 4px;">
+              <option value="">-- Select a playbook --</option>
+              <option value="brute_force">Brute Force Attack</option>
+              <option value="lateral_movement">Lateral Movement</option>
+              <option value="data_exfiltration">Data Exfiltration</option>
+            </select>
+            <button id="btn_run_playbook" class="btn btn-primary" style="font-size: 13px; padding: 6px 20px;">
+              Run Playbook
+            </button>
+          </div>
+          <div id="playbook_status_wrap" style="display: none; margin-top: 10px;">
+            <span id="playbook_status"/>
+          </div>
+          <div style="margin-top: 12px; font-size: 12px; color: #999;">
+            <b>Brute Force:</b> 20-50 auth failures, then success, network access, and process execution.<br/>
+            <b>Lateral Movement:</b> Auth + PsExec across 3 hosts via SMB.<br/>
+            <b>Data Exfiltration:</b> File staging, DNS tunneling, large transfer, DLP alert.
+          </div>
+        </div>
+      </html>
+    </panel>
+  </row>
   <row>
     <panel>
       <title>On-Demand Generation</title>
@@ -56,11 +154,16 @@
             Generate <b>$event_count$</b> <b>$selected_model$</b> events
             spread across <b>$timerange$</b> into index <b>$target_index$</b>.
           </p>
-          <button id="btn_generate_index" class="btn btn-primary" style="font-size: 14px; padding: 8px 24px;">
-            Generate &amp; Index
-          </button>
-          <div id="generate_status_wrap" style="display: none;">
-            <span id="generate_status"></span>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <button id="btn_generate_index" class="btn btn-primary" style="font-size: 14px; padding: 8px 24px;">
+              Generate &amp; Index
+            </button>
+            <button id="btn_purge" class="btn" style="font-size: 14px; padding: 8px 24px; background: #dc4e41; color: #fff; border: none; border-radius: 4px;">
+              Purge Generated Data
+            </button>
+          </div>
+          <div id="generate_status_wrap" style="display: none; margin-top: 10px;">
+            <span id="generate_status"/>
           </div>
           <p style="color: #999; font-size: 12px; margin-top: 12px;">
             Events are generated and indexed server-side via the REST handler.
@@ -69,53 +172,55 @@
         </div>
       </html>
     </panel>
+    <panel>
+      <title>License Impact Estimator</title>
+      <html>
+        <div style="padding: 15px;">
+          <p style="font-size: 13px; color: #666; margin-bottom: 8px;">
+            Estimated license impact for continuous generation:
+          </p>
+          <div id="license_estimate" style="font-size: 24px; font-weight: 700; color: #2ca19b;">
+            - MB/day
+          </div>
+          <p style="font-size: 11px; color: #999; margin-top: 8px;">
+            Based on ~500 bytes/event average. Actual size varies by model.
+          </p>
+        </div>
+      </html>
+    </panel>
   </row>
-
-  <!-- Row 2: Preview Generated Events -->
   <row>
     <panel>
       <title>Preview: $selected_model$ Events (first 10)</title>
       <table>
         <search>
-          <query>| cimgenerate model="$selected_model$" count=10 timerange="$timerange$"
+          <query>| cimgenerate model="$selected_model$" count=10 timerange="$timerange$" pool_size=$pool_size$ external_ratio=$external_ratio$
 | table _time action user src dest *</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
         </search>
-        <option name="count">10</option>
+        <option name="count">5</option>
         <option name="drilldown">none</option>
         <option name="wrap">true</option>
       </table>
     </panel>
   </row>
-
-  <!-- Row 3: Active Modular Inputs -->
   <row>
     <panel>
-      <title>Active Continuous Generators</title>
-      <table>
-        <search>
-          <query>| rest /services/data/inputs/cim_synthetic_data
-| table title, content.model, content.events_per_interval, content.index, content.interval, disabled
-| rename title as "Input Name", content.model as "Model", content.events_per_interval as "Events/Interval", content.index as "Index", content.interval as "Interval (s)"
-| sort disabled, "Input Name"</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
-        </search>
-        <option name="count">20</option>
-        <option name="drilldown">none</option>
-      </table>
+      <title>Continuous Generators</title>
+      <html>
+        <div id="generators_table_wrap" style="padding: 10px;">
+          <p style="color:#999; font-size:12px; margin-bottom:10px;">Loading generators...</p>
+        </div>
+      </html>
     </panel>
   </row>
-
-  <!-- Row 4: Recent Generated Data -->
   <row>
     <panel>
       <title>Recent Generated Events (last 1 hour)</title>
       <chart>
         <search>
-          <query>index=synthetic_cim earliest=-1h
-| timechart span=5m count by sourcetype</query>
+          <query>| tstats count where earliest=-1h index=* sourcetype=cimdg:synthetic:* by sourcetype _time span=5m</query>
           <earliest>-1h</earliest>
           <latest>now</latest>
         </search>
@@ -124,25 +229,23 @@
         <option name="charting.legend.placement">bottom</option>
         <option name="charting.axisTitleX.text">Time</option>
         <option name="charting.axisTitleY.text">Events</option>
+        <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
     <panel>
       <title>Events by Model</title>
       <chart>
         <search>
-          <query>index=synthetic_cim earliest=-1h
-| stats count by sourcetype
-| sort -count</query>
+          <query>| tstats count where earliest=-1h index=* sourcetype=cimdg:synthetic:* by sourcetype</query>
           <earliest>-1h</earliest>
           <latest>now</latest>
         </search>
         <option name="charting.chart">pie</option>
         <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
   </row>
-
-  <!-- Row 5: CIM Compliance Quick Check -->
   <row>
     <panel>
       <title>CIM Compliance Check: $selected_model$</title>
@@ -155,9 +258,23 @@
           <earliest>-24h@h</earliest>
           <latest>now</latest>
         </search>
-        <option name="count">50</option>
+        <option name="count">10</option>
         <option name="drilldown">none</option>
       </table>
     </panel>
+  </row>
+
+  <row>
+    <html>
+      <div class="mb2-footer">
+        <p>&#169; 2026 MB2 Analytics. All rights reserved.</p>
+        <div class="footer-brand">
+          <a href="https://mb2analytics.com" target="_blank" class="footer-brand-link">
+            <img src="/static/app/cimdg/mb2/logos/logo-dark.png" class="footer-brand-logo" alt="MB2 Analytics" />
+            MB2 Analytics
+          </a>
+        </div>
+      </div>
+    </html>
   </row>
 </form>

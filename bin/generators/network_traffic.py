@@ -3,6 +3,7 @@
 import random
 
 from generators.base import BaseGenerator, register_generator
+from generators.correlation import SessionManager
 
 
 # Protocol-port mapping for realistic correlations
@@ -61,5 +62,17 @@ class NetworkTrafficGenerator(BaseGenerator):
         # Make src/dest IPs consistent with named fields
         event["src"] = event.get("src_ip", event.get("src"))
         event["dest"] = event.get("dest_ip", event.get("dest"))
+
+        # Cross-model correlation: 20% chance to use active session
+        if random.random() < 0.20:
+            try:
+                session = SessionManager().get_session()
+                if session:
+                    event["session_id"] = session["session_id"]
+                    event["src"] = session["src"]
+                    event["src_ip"] = session["src"]
+                    SessionManager().mark_model(session["session_id"], "network_traffic")
+            except Exception:
+                pass
 
         return event

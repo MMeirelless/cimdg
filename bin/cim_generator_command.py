@@ -1,5 +1,5 @@
 """
-CIM Data Generator — Custom Search Command.
+CIM Data Generator  -  Custom Search Command.
 
 Usage:
     | cimgenerate model="Authentication" count=100 timerange="-24h"
@@ -23,10 +23,8 @@ from splunklib.searchcommands import (
     validators,
 )
 
+import generators  # noqa: F401  -  auto-discovers and registers all generators
 from generators.base import GeneratorFactory
-# Import all generators to register them
-from generators import authentication, network_traffic, web, endpoint
-from generators import malware, intrusion_detection, dns
 
 
 # Timerange string to seconds
@@ -67,7 +65,12 @@ class CIMGenerateCommand(GeneratingCommand):
 
     model = Option(
         doc="CIM data model to generate (e.g., Authentication, network_traffic)",
-        require=True,
+        require=False,
+    )
+
+    playbook = Option(
+        doc="Attack playbook to execute (e.g., brute_force, lateral_movement, data_exfiltration)",
+        require=False,
     )
 
     count = Option(
@@ -83,14 +86,67 @@ class CIMGenerateCommand(GeneratingCommand):
         default="-1h",
     )
 
+    pool_size = Option(
+        doc="Number of entities per pool (IPs, users, hosts). Default: 50",
+        require=False,
+        default=50,
+        validate=validators.Integer(minimum=5, maximum=500),
+    )
+
+    external_ratio = Option(
+        doc="Percentage of external IPs in src traffic (0-100). Default: 20",
+        require=False,
+        default=20,
+        validate=validators.Integer(minimum=0, maximum=100),
+    )
+
     def generate(self):
+        # Apply pool overrides if non-default
+        pool_size = int(self.pool_size)
+        external_ratio = int(self.external_ratio)
+        if pool_size != 50 or external_ratio != 20:
+            from generators.base import EntityPool
+            pool = EntityPool()
+            pool.external_ratio = external_ratio / 100.0
+
+        # Playbook mode: generate a multi-model attack scenario
+        if self.playbook:
+            from playbooks.base import PlaybookFactory
+            from playbooks import brute_force, lateral_movement, data_exfiltration  # noqa
+
+            try:
+                pb = PlaybookFactory.create(self.playbook)
+            except ValueError as e:
+                self.error_exit(e, str(e))
+                return
+
+            import json
+            results = pb.execute(base_time=time.time())
+            for item in results:
+                event_data = item["event"]
+                result = dict(event_data)
+                result["_raw"] = json.dumps(event_data, separators=(",", ":"))
+                result["sourcetype"] = item["sourcetype"]
+                result["source"] = "cimgenerate:playbook:%s" % self.playbook
+                result["host"] = "cimdg"
+                yield result
+            return
+
+        # Standard model mode
+        if not self.model:
+            self.error_exit(
+                Exception("Either 'model' or 'playbook' parameter is required."),
+                "Specify model=<name> or playbook=<name>"
+            )
+            return
+
         model_name = self.model.lower().strip()
 
         try:
             generator = GeneratorFactory.create(model_name)
         except ValueError as e:
             self.error_exit(
-                e, "Supported models: %s" % ", ".join(GeneratorFactory.SUPPORTED_MODELS)
+                e, "Supported models: %s" % ", ".join(GeneratorFactory.list_models())
             )
             return
 

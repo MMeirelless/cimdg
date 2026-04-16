@@ -1,79 +1,193 @@
 {
   "model": "Authentication",
-  "sourcetype": "synthetic:authentication",
-  "tags": ["authentication"],
+  "sourcetype": "cimdg:synthetic:authentication",
+  "tags": [
+    "authentication"
+  ],
   "fields": {
     "action": {
       "type": "weighted_choice",
       "values": [
-        {"value": "success", "weight": 95},
-        {"value": "failure", "weight": 4},
-        {"value": "lockout", "weight": 1}
+        {
+          "value": "success",
+          "weight": 95
+        },
+        {
+          "value": "failure",
+          "weight": 4
+        },
+        {
+          "value": "lockout",
+          "weight": 1
+        }
       ]
     },
     "app": {
       "type": "weighted_choice",
       "values": [
-        {"value": "sshd", "weight": 25},
-        {"value": "win:security", "weight": 30},
-        {"value": "vpn", "weight": 15},
-        {"value": "okta", "weight": 15},
-        {"value": "sudo", "weight": 10},
-        {"value": "pam", "weight": 5}
+        {
+          "value": "sshd",
+          "weight": 25
+        },
+        {
+          "value": "win:security",
+          "weight": 30
+        },
+        {
+          "value": "vpn",
+          "weight": 15
+        },
+        {
+          "value": "okta",
+          "weight": 15
+        },
+        {
+          "value": "sudo",
+          "weight": 10
+        },
+        {
+          "value": "pam",
+          "weight": 5
+        }
       ]
     },
     "authentication_method": {
       "type": "weighted_choice",
       "values": [
-        {"value": "password", "weight": 50},
-        {"value": "certificate", "weight": 15},
-        {"value": "MFA", "weight": 25},
-        {"value": "kerberos", "weight": 8},
-        {"value": "SAML", "weight": 2}
+        {
+          "value": "password",
+          "weight": 50
+        },
+        {
+          "value": "certificate",
+          "weight": 15
+        },
+        {
+          "value": "MFA",
+          "weight": 25
+        },
+        {
+          "value": "kerberos",
+          "weight": 8
+        },
+        {
+          "value": "SAML",
+          "weight": 2
+        }
       ]
     },
-    "dest": {"type": "dest_ip"},
-    "duration": {"type": "number", "min": 0.001, "max": 30.0, "precision": 3},
+    "dest": {
+      "type": "dest_ip"
+    },
+    "duration": {
+      "type": "number",
+      "min": 0.001,
+      "max": 30.0,
+      "precision": 3
+    },
     "signature": {
       "type": "weighted_choice",
       "values": [
-        {"value": "An account was successfully logged on", "weight": 70},
-        {"value": "An account failed to log on", "weight": 20},
-        {"value": "A logon was attempted using explicit credentials", "weight": 5},
-        {"value": "Account locked out", "weight": 3},
-        {"value": "A user account was changed", "weight": 2}
+        {
+          "value": "An account was successfully logged on",
+          "weight": 70
+        },
+        {
+          "value": "An account failed to log on",
+          "weight": 20
+        },
+        {
+          "value": "A logon was attempted using explicit credentials",
+          "weight": 5
+        },
+        {
+          "value": "Account locked out",
+          "weight": 3
+        },
+        {
+          "value": "A user account was changed",
+          "weight": 2
+        }
       ]
     },
     "signature_id": {
       "type": "weighted_choice",
       "values": [
-        {"value": "4624", "weight": 70},
-        {"value": "4625", "weight": 20},
-        {"value": "4648", "weight": 5},
-        {"value": "4740", "weight": 3},
-        {"value": "4738", "weight": 2}
+        {
+          "value": "4624",
+          "weight": 70
+        },
+        {
+          "value": "4625",
+          "weight": 20
+        },
+        {
+          "value": "4648",
+          "weight": 5
+        },
+        {
+          "value": "4740",
+          "weight": 3
+        },
+        {
+          "value": "4738",
+          "weight": 2
+        }
       ]
     },
-    "src": {"type": "src_ip"},
-    "src_user": {"type": "username"},
-    "user": {"type": "username"},
+    "src": {
+      "type": "src_ip"
+    },
+    "src_user": {
+      "type": "username"
+    },
+    "user": {
+      "type": "username"
+    },
     "user_type": {
       "type": "weighted_choice",
       "values": [
-        {"value": "user", "weight": 70},
-        {"value": "admin", "weight": 15},
-        {"value": "service", "weight": 10},
-        {"value": "system", "weight": 5}
+        {
+          "value": "user",
+          "weight": 70
+        },
+        {
+          "value": "admin",
+          "weight": 15
+        },
+        {
+          "value": "service",
+          "weight": 10
+        },
+        {
+          "value": "system",
+          "weight": 5
+        }
       ]
     },
     "vendor_product": {
       "type": "weighted_choice",
       "values": [
-        {"value": "Microsoft Windows", "weight": 40},
-        {"value": "OpenSSH", "weight": 25},
-        {"value": "Cisco ASA", "weight": 15},
-        {"value": "Okta", "weight": 10},
-        {"value": "Palo Alto GlobalProtect", "weight": 10}
+        {
+          "value": "Microsoft Windows",
+          "weight": 40
+        },
+        {
+          "value": "OpenSSH",
+          "weight": 25
+        },
+        {
+          "value": "Cisco ASA",
+          "weight": 15
+        },
+        {
+          "value": "Okta",
+          "weight": 10
+        },
+        {
+          "value": "Palo Alto GlobalProtect",
+          "weight": 10
+        }
       ]
     }
   },
@@ -82,21 +196,56 @@
       "reason": {
         "type": "weighted_choice",
         "values": [
-          {"value": "invalid_password", "weight": 60},
-          {"value": "account_disabled", "weight": 15},
-          {"value": "expired_cert", "weight": 10},
-          {"value": "unknown_user", "weight": 10},
-          {"value": "mfa_timeout", "weight": 5}
+          {
+            "value": "invalid_password",
+            "weight": 60
+          },
+          {
+            "value": "account_disabled",
+            "weight": 15
+          },
+          {
+            "value": "expired_cert",
+            "weight": 10
+          },
+          {
+            "value": "unknown_user",
+            "weight": 10
+          },
+          {
+            "value": "mfa_timeout",
+            "weight": 5
+          }
         ]
       },
-      "signature": {"type": "static", "value": "An account failed to log on"},
-      "signature_id": {"type": "static", "value": "4625"},
-      "duration": {"type": "number", "min": 0.001, "max": 2.0, "precision": 3}
+      "signature": {
+        "type": "static",
+        "value": "An account failed to log on"
+      },
+      "signature_id": {
+        "type": "static",
+        "value": "4625"
+      },
+      "duration": {
+        "type": "number",
+        "min": 0.001,
+        "max": 2.0,
+        "precision": 3
+      }
     },
     "action=lockout": {
-      "reason": {"type": "static", "value": "too_many_failures"},
-      "signature": {"type": "static", "value": "Account locked out"},
-      "signature_id": {"type": "static", "value": "4740"}
+      "reason": {
+        "type": "static",
+        "value": "too_many_failures"
+      },
+      "signature": {
+        "type": "static",
+        "value": "Account locked out"
+      },
+      "signature_id": {
+        "type": "static",
+        "value": "4740"
+      }
     }
   }
 }

@@ -1,3 +1,5 @@
 <nav>
   <view name="generator_config" default="true" />
+  <view name="generation_status" />
+  <view name="cim_validation" />
 </nav>

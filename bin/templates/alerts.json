@@ -1,0 +1,206 @@
+{
+  "model": "Alerts",
+  "sourcetype": "cimdg:synthetic:alerts",
+  "tags": [
+    "alert"
+  ],
+  "fields": {
+    "severity": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "critical",
+          "weight": 5
+        },
+        {
+          "value": "high",
+          "weight": 15
+        },
+        {
+          "value": "medium",
+          "weight": 40
+        },
+        {
+          "value": "low",
+          "weight": 30
+        },
+        {
+          "value": "informational",
+          "weight": 10
+        }
+      ]
+    },
+    "signature": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "Excessive Failed Logins",
+          "weight": 15
+        },
+        {
+          "value": "Brute Force Access Behavior Detected",
+          "weight": 10
+        },
+        {
+          "value": "Abnormally High Traffic Volume",
+          "weight": 10
+        },
+        {
+          "value": "Malware Activity Detected",
+          "weight": 10
+        },
+        {
+          "value": "Data Exfiltration Suspected",
+          "weight": 8
+        },
+        {
+          "value": "Unauthorized Access Attempt",
+          "weight": 12
+        },
+        {
+          "value": "Suspicious DNS Query",
+          "weight": 8
+        },
+        {
+          "value": "Port Scan Activity",
+          "weight": 7
+        },
+        {
+          "value": "Privilege Escalation Detected",
+          "weight": 5
+        },
+        {
+          "value": "Policy Violation",
+          "weight": 15
+        }
+      ]
+    },
+    "signature_id": {
+      "type": "number",
+      "min": 1000,
+      "max": 9999
+    },
+    "app": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "SplunkEnterpriseSecuritySuite",
+          "weight": 40
+        },
+        {
+          "value": "Splunk_SA_CIM",
+          "weight": 20
+        },
+        {
+          "value": "DA-ESS-AccessProtection",
+          "weight": 15
+        },
+        {
+          "value": "DA-ESS-NetworkProtection",
+          "weight": 15
+        },
+        {
+          "value": "DA-ESS-EndpointProtection",
+          "weight": 10
+        }
+      ]
+    },
+    "dest": {
+      "type": "dest_ip"
+    },
+    "src": {
+      "type": "src_ip"
+    },
+    "type": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "alert",
+          "weight": 50
+        },
+        {
+          "value": "notable",
+          "weight": 35
+        },
+        {
+          "value": "correlation",
+          "weight": 15
+        }
+      ]
+    },
+    "description": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "Multiple failed authentication attempts detected from single source",
+          "weight": 15
+        },
+        {
+          "value": "Anomalous network traffic volume exceeds baseline",
+          "weight": 12
+        },
+        {
+          "value": "Known malware signature detected on endpoint",
+          "weight": 10
+        },
+        {
+          "value": "Unusual data transfer to external destination",
+          "weight": 10
+        },
+        {
+          "value": "Account lockout triggered for user",
+          "weight": 10
+        },
+        {
+          "value": "Suspicious process execution on critical server",
+          "weight": 8
+        },
+        {
+          "value": "DNS query to known malicious domain",
+          "weight": 8
+        },
+        {
+          "value": "Unauthorized configuration change detected",
+          "weight": 8
+        },
+        {
+          "value": "Privilege escalation attempt via sudo",
+          "weight": 7
+        },
+        {
+          "value": "Compliance policy violation detected",
+          "weight": 12
+        }
+      ]
+    },
+    "user": {
+      "type": "username"
+    },
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "Splunk Enterprise Security",
+          "weight": 40
+        },
+        {
+          "value": "CrowdStrike Falcon",
+          "weight": 20
+        },
+        {
+          "value": "Palo Alto Cortex XSOAR",
+          "weight": 15
+        },
+        {
+          "value": "IBM QRadar",
+          "weight": 15
+        },
+        {
+          "value": "Sumo Logic CSE",
+          "weight": 10
+        }
+      ]
+    }
+  },
+  "dependencies": {}
+}

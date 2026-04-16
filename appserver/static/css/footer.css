@@ -1,0 +1,77 @@
+/* CIMDG App Footer - shared across all pages */
+.mb2-footer {
+  padding: 16px 32px;
+  border-top: 1px solid rgba(4, 26, 39, 0.08);
+  background: #edf0f4;
+  font-family: var(--mb2-font-family, 'Hauora Sans', system-ui, sans-serif);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mb2-footer p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--mb2-deep, #0a4f5a);
+  line-height: 1.5;
+}
+
+.mb2-footer a {
+  color: var(--mb2-professional, #107174);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.mb2-footer a:hover {
+  text-decoration: underline;
+}
+
+.mb2-footer .footer-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.mb2-footer .btn {
+  font-size: 12px;
+  padding: 5px 12px;
+}
+
+/* Footer brand */
+.footer-brand {
+  width: 100%;
+  text-align: center;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(4, 26, 39, 0.06);
+}
+
+.footer-brand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500 !important;
+  color: var(--mb2-professional) !important;
+  opacity: 0.7;
+  transition: opacity var(--mb2-transition-fast);
+}
+
+.footer-brand-link:hover {
+  opacity: 1;
+  text-decoration: none !important;
+}
+
+.footer-brand-logo {
+  height: 20px;
+}
+
+@media screen and (max-width: 700px) {
+  .mb2-footer {
+    padding: 16px 20px;
+    flex-direction: column;
+    text-align: center;
+  }
+}

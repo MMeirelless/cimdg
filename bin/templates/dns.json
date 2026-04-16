@@ -1,81 +1,188 @@
 {
   "model": "DNS",
-  "sourcetype": "synthetic:dns",
-  "tags": ["network", "resolution", "dns"],
+  "sourcetype": "cimdg:synthetic:dns",
+  "tags": [
+    "network",
+    "resolution",
+    "dns"
+  ],
   "fields": {
     "query": {
       "type": "external_domain"
     },
-    "dest": {"type": "dest_ip"},
-    "src": {"type": "src_ip"},
-    "answer": {"type": "external_ip"},
+    "dest": {
+      "type": "dest_ip"
+    },
+    "src": {
+      "type": "src_ip"
+    },
+    "answer": {
+      "type": "external_ip"
+    },
     "message_type": {
       "type": "weighted_choice",
       "values": [
-        {"value": "Query", "weight": 50},
-        {"value": "Response", "weight": 50}
+        {
+          "value": "Query",
+          "weight": 50
+        },
+        {
+          "value": "Response",
+          "weight": 50
+        }
       ]
     },
     "query_type": {
       "type": "weighted_choice",
       "values": [
-        {"value": "A", "weight": 55},
-        {"value": "AAAA", "weight": 15},
-        {"value": "MX", "weight": 5},
-        {"value": "CNAME", "weight": 10},
-        {"value": "TXT", "weight": 5},
-        {"value": "PTR", "weight": 5},
-        {"value": "NS", "weight": 3},
-        {"value": "SOA", "weight": 2}
+        {
+          "value": "A",
+          "weight": 55
+        },
+        {
+          "value": "AAAA",
+          "weight": 15
+        },
+        {
+          "value": "MX",
+          "weight": 5
+        },
+        {
+          "value": "CNAME",
+          "weight": 10
+        },
+        {
+          "value": "TXT",
+          "weight": 5
+        },
+        {
+          "value": "PTR",
+          "weight": 5
+        },
+        {
+          "value": "NS",
+          "weight": 3
+        },
+        {
+          "value": "SOA",
+          "weight": 2
+        }
       ]
     },
     "record_type": {
       "type": "weighted_choice",
       "values": [
-        {"value": "A", "weight": 55},
-        {"value": "AAAA", "weight": 15},
-        {"value": "MX", "weight": 5},
-        {"value": "CNAME", "weight": 10},
-        {"value": "TXT", "weight": 5},
-        {"value": "PTR", "weight": 5},
-        {"value": "NS", "weight": 3},
-        {"value": "SOA", "weight": 2}
+        {
+          "value": "A",
+          "weight": 55
+        },
+        {
+          "value": "AAAA",
+          "weight": 15
+        },
+        {
+          "value": "MX",
+          "weight": 5
+        },
+        {
+          "value": "CNAME",
+          "weight": 10
+        },
+        {
+          "value": "TXT",
+          "weight": 5
+        },
+        {
+          "value": "PTR",
+          "weight": 5
+        },
+        {
+          "value": "NS",
+          "weight": 3
+        },
+        {
+          "value": "SOA",
+          "weight": 2
+        }
       ]
     },
     "reply_code": {
       "type": "weighted_choice",
       "values": [
-        {"value": "NOERROR", "weight": 85},
-        {"value": "NXDOMAIN", "weight": 10},
-        {"value": "SERVFAIL", "weight": 3},
-        {"value": "REFUSED", "weight": 2}
+        {
+          "value": "NOERROR",
+          "weight": 85
+        },
+        {
+          "value": "NXDOMAIN",
+          "weight": 10
+        },
+        {
+          "value": "SERVFAIL",
+          "weight": 3
+        },
+        {
+          "value": "REFUSED",
+          "weight": 2
+        }
       ]
     },
     "transport": {
       "type": "weighted_choice",
       "values": [
-        {"value": "udp", "weight": 85},
-        {"value": "tcp", "weight": 15}
+        {
+          "value": "udp",
+          "weight": 85
+        },
+        {
+          "value": "tcp",
+          "weight": 15
+        }
       ]
     },
-    "ttl": {"type": "number", "min": 30, "max": 86400},
+    "ttl": {
+      "type": "number",
+      "min": 30,
+      "max": 86400
+    },
     "vendor_product": {
       "type": "weighted_choice",
       "values": [
-        {"value": "Microsoft DNS", "weight": 30},
-        {"value": "BIND", "weight": 25},
-        {"value": "Infoblox", "weight": 20},
-        {"value": "Cisco Umbrella", "weight": 15},
-        {"value": "Cloudflare DNS", "weight": 10}
+        {
+          "value": "Microsoft DNS",
+          "weight": 30
+        },
+        {
+          "value": "BIND",
+          "weight": 25
+        },
+        {
+          "value": "Infoblox",
+          "weight": 20
+        },
+        {
+          "value": "Cisco Umbrella",
+          "weight": 15
+        },
+        {
+          "value": "Cloudflare DNS",
+          "weight": 10
+        }
       ]
     }
   },
   "dependencies": {
     "reply_code=NXDOMAIN": {
-      "answer": {"type": "static", "value": ""}
+      "answer": {
+        "type": "static",
+        "value": ""
+      }
     },
     "message_type=Query": {
-      "answer": {"type": "static", "value": ""}
+      "answer": {
+        "type": "static",
+        "value": ""
+      }
     }
   }
 }

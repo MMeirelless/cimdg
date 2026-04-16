@@ -62,6 +62,17 @@ class AuthenticationGenerator(BaseGenerator):
             event["signature_id"] = "4624"
             event.pop("reason", None)
 
+            # Cross-model correlation: 30% of successful auths create a session
+            if random.random() < 0.30:
+                try:
+                    from generators.correlation import SessionManager
+                    sm = SessionManager()
+                    sid = sm.create_session(event["user"], event["src"])
+                    event["session_id"] = sid
+                    sm.mark_model(sid, "authentication")
+                except Exception:
+                    pass
+
         # Keep src_user consistent with user
         if "src_user" not in event or event.get("user_type") != "service":
             event["src_user"] = event["user"]

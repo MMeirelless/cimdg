@@ -1,85 +1,223 @@
 {
   "model": "Network Traffic",
-  "sourcetype": "synthetic:network_traffic",
-  "tags": ["network", "communicate"],
+  "sourcetype": "cimdg:synthetic:network_traffic",
+  "tags": [
+    "network",
+    "communicate"
+  ],
   "fields": {
     "action": {
       "type": "weighted_choice",
       "values": [
-        {"value": "allowed", "weight": 85},
-        {"value": "blocked", "weight": 10},
-        {"value": "dropped", "weight": 5}
+        {
+          "value": "allowed",
+          "weight": 85
+        },
+        {
+          "value": "blocked",
+          "weight": 10
+        },
+        {
+          "value": "dropped",
+          "weight": 5
+        }
       ]
     },
     "app": {
       "type": "weighted_choice",
       "values": [
-        {"value": "ssl", "weight": 35},
-        {"value": "dns", "weight": 20},
-        {"value": "http", "weight": 25},
-        {"value": "ssh", "weight": 10},
-        {"value": "smtp", "weight": 5},
-        {"value": "ftp", "weight": 5}
+        {
+          "value": "ssl",
+          "weight": 35
+        },
+        {
+          "value": "dns",
+          "weight": 20
+        },
+        {
+          "value": "http",
+          "weight": 25
+        },
+        {
+          "value": "ssh",
+          "weight": 10
+        },
+        {
+          "value": "smtp",
+          "weight": 5
+        },
+        {
+          "value": "ftp",
+          "weight": 5
+        }
       ]
     },
-    "bytes_in": {"type": "lognormal", "mu": 7, "sigma": 2, "max": 1000000, "precision": 0},
-    "bytes_out": {"type": "lognormal", "mu": 8, "sigma": 2, "max": 5000000, "precision": 0},
-    "dest": {"type": "dest_ip"},
-    "dest_ip": {"type": "dest_ip"},
+    "bytes_in": {
+      "type": "lognormal",
+      "mu": 7,
+      "sigma": 2,
+      "max": 1000000,
+      "precision": 0
+    },
+    "bytes_out": {
+      "type": "lognormal",
+      "mu": 8,
+      "sigma": 2,
+      "max": 5000000,
+      "precision": 0
+    },
+    "dest": {
+      "type": "dest_ip"
+    },
+    "dest_ip": {
+      "type": "dest_ip"
+    },
     "dest_port": {
       "type": "port",
-      "common_ports": [443, 80, 22, 53, 8080, 3389, 25, 110, 993, 8443]
+      "common_ports": [
+        443,
+        80,
+        22,
+        53,
+        8080,
+        3389,
+        25,
+        110,
+        993,
+        8443
+      ]
     },
     "direction": {
       "type": "weighted_choice",
       "values": [
-        {"value": "outbound", "weight": 50},
-        {"value": "inbound", "weight": 35},
-        {"value": "lateral", "weight": 15}
+        {
+          "value": "outbound",
+          "weight": 50
+        },
+        {
+          "value": "inbound",
+          "weight": 35
+        },
+        {
+          "value": "lateral",
+          "weight": 15
+        }
       ]
     },
-    "duration": {"type": "number", "min": 0.01, "max": 3600, "precision": 3},
-    "dvc": {"type": "hostname"},
-    "packets_in": {"type": "number", "min": 1, "max": 5000},
-    "packets_out": {"type": "number", "min": 1, "max": 5000},
+    "duration": {
+      "type": "number",
+      "min": 0.01,
+      "max": 3600,
+      "precision": 3
+    },
+    "dvc": {
+      "type": "hostname"
+    },
+    "packets_in": {
+      "type": "number",
+      "min": 1,
+      "max": 5000
+    },
+    "packets_out": {
+      "type": "number",
+      "min": 1,
+      "max": 5000
+    },
     "protocol": {
       "type": "weighted_choice",
       "values": [
-        {"value": "ip", "weight": 100}
+        {
+          "value": "ip",
+          "weight": 100
+        }
       ]
     },
     "rule": {
       "type": "weighted_choice",
       "values": [
-        {"value": "Allow_HTTPS", "weight": 25},
-        {"value": "Allow_HTTP", "weight": 15},
-        {"value": "Allow_DNS", "weight": 15},
-        {"value": "Allow_SSH", "weight": 10},
-        {"value": "Deny_All", "weight": 10},
-        {"value": "NAT_Outbound", "weight": 10},
-        {"value": "Allow_VPN", "weight": 8},
-        {"value": "Block_External_RDP", "weight": 7}
+        {
+          "value": "Allow_HTTPS",
+          "weight": 25
+        },
+        {
+          "value": "Allow_HTTP",
+          "weight": 15
+        },
+        {
+          "value": "Allow_DNS",
+          "weight": 15
+        },
+        {
+          "value": "Allow_SSH",
+          "weight": 10
+        },
+        {
+          "value": "Deny_All",
+          "weight": 10
+        },
+        {
+          "value": "NAT_Outbound",
+          "weight": 10
+        },
+        {
+          "value": "Allow_VPN",
+          "weight": 8
+        },
+        {
+          "value": "Block_External_RDP",
+          "weight": 7
+        }
       ]
     },
-    "src": {"type": "src_ip"},
-    "src_ip": {"type": "src_ip"},
-    "src_port": {"type": "high_port"},
+    "src": {
+      "type": "src_ip"
+    },
+    "src_ip": {
+      "type": "src_ip"
+    },
+    "src_port": {
+      "type": "high_port"
+    },
     "transport": {
       "type": "weighted_choice",
       "values": [
-        {"value": "tcp", "weight": 75},
-        {"value": "udp", "weight": 20},
-        {"value": "icmp", "weight": 5}
+        {
+          "value": "tcp",
+          "weight": 75
+        },
+        {
+          "value": "udp",
+          "weight": 20
+        },
+        {
+          "value": "icmp",
+          "weight": 5
+        }
       ]
     },
     "vendor_product": {
       "type": "weighted_choice",
       "values": [
-        {"value": "Palo Alto Networks Firewall", "weight": 35},
-        {"value": "Cisco ASA", "weight": 25},
-        {"value": "Check Point", "weight": 15},
-        {"value": "Fortinet FortiGate", "weight": 15},
-        {"value": "pfSense", "weight": 10}
+        {
+          "value": "Palo Alto Networks Firewall",
+          "weight": 35
+        },
+        {
+          "value": "Cisco ASA",
+          "weight": 25
+        },
+        {
+          "value": "Check Point",
+          "weight": 15
+        },
+        {
+          "value": "Fortinet FortiGate",
+          "weight": 15
+        },
+        {
+          "value": "pfSense",
+          "weight": 10
+        }
       ]
     }
   },
@@ -88,10 +226,22 @@
       "rule": {
         "type": "weighted_choice",
         "values": [
-          {"value": "Deny_All", "weight": 40},
-          {"value": "Block_External_RDP", "weight": 30},
-          {"value": "Block_Suspicious", "weight": 20},
-          {"value": "IPS_Block", "weight": 10}
+          {
+            "value": "Deny_All",
+            "weight": 40
+          },
+          {
+            "value": "Block_External_RDP",
+            "weight": 30
+          },
+          {
+            "value": "Block_Suspicious",
+            "weight": 20
+          },
+          {
+            "value": "IPS_Block",
+            "weight": 10
+          }
         ]
       }
     }

@@ -1,0 +1,221 @@
+/* ============================================================
+   MB2 Analytics -- Brand Design System
+   Single source of truth for colors, typography, and shared components.
+   ============================================================ */
+
+/* ---- @font-face: Hauora Sans (7 weights) ---- */
+@font-face {
+  font-family: 'Hauora Sans';
+  src: url('/static/app/cimdg/mb2/fonts/hauora-sans/hauora-sans-latin-200-normal.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hauora Sans';
+  src: url('/static/app/cimdg/mb2/fonts/hauora-sans/hauora-sans-latin-300-normal.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hauora Sans';
+  src: url('/static/app/cimdg/mb2/fonts/hauora-sans/hauora-sans-latin-400-normal.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hauora Sans';
+  src: url('/static/app/cimdg/mb2/fonts/hauora-sans/hauora-sans-latin-500-normal.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hauora Sans';
+  src: url('/static/app/cimdg/mb2/fonts/hauora-sans/hauora-sans-latin-600-normal.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hauora Sans';
+  src: url('/static/app/cimdg/mb2/fonts/hauora-sans/hauora-sans-latin-700-normal.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hauora Sans';
+  src: url('/static/app/cimdg/mb2/fonts/hauora-sans/hauora-sans-latin-800-normal.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---- Design Tokens ---- */
+:root {
+  /* Color palette */
+  --mb2-dark: #041a27;
+  --mb2-deep: #0a4f5a;
+  --mb2-professional: #107174;
+  --mb2-medium: #2ca19b;
+  --mb2-light: #8dd6d1;
+  --mb2-off-white: #f5f7fa;
+  --mb2-destructive: #dc3545;
+
+  /* Typography */
+  --mb2-font-family: 'Hauora Sans', system-ui, -apple-system, sans-serif;
+  --mb2-font-size-xs: 11px;
+  --mb2-font-size-sm: 13px;
+  --mb2-font-size-base: 14px;
+  --mb2-font-size-md: 16px;
+  --mb2-font-size-lg: 20px;
+  --mb2-font-size-xl: 28px;
+  --mb2-font-size-2xl: 36px;
+
+  /* Radii */
+  --mb2-radius-sm: 4px;
+  --mb2-radius-md: 8px;
+  --mb2-radius-lg: 12px;
+
+  /* Shadows */
+  --mb2-shadow-sm: 0 1px 3px rgba(4, 26, 39, 0.08);
+  --mb2-shadow-md: 0 4px 12px rgba(4, 26, 39, 0.12);
+  --mb2-shadow-lg: 0 8px 24px rgba(4, 26, 39, 0.16);
+
+  /* Transitions */
+  --mb2-transition-fast: 0.15s ease;
+  --mb2-transition-base: 0.25s ease;
+}
+
+/* ---- Global Font Override ---- */
+body,
+.dashboard-body {
+  font-family: var(--mb2-font-family) !important;
+}
+
+/* ---- Edge-to-Edge Layout ---- */
+.dashboard-body { padding: 0 !important; }
+.dashboard-row { margin: 0 !important; padding: 0 !important; }
+.dashboard-row .dashboard-cell { padding: 0 !important; }
+.dashboard-row .panel-element-row,
+.dashboard-row .panel-body { padding: 0 !important; }
+.dashboard-panel { background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
+
+/* ---- Shared Components ---- */
+
+/* App Bar -- compact header replacing the old hero */
+.mb2-appbar {
+  background: linear-gradient(135deg, var(--mb2-dark) 0%, var(--mb2-deep) 100%);
+  padding: 0 32px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: #fff;
+}
+.mb2-appbar-logo-link { display: flex; align-items: center; flex-shrink: 0; }
+.mb2-appbar-logo { height: 28px; flex-shrink: 0; }
+
+/* Navbar */
+.mb2-appbar-nav { display: flex; align-items: center; gap: 4px; height: 100%; }
+.mb2-appbar-nav-item {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 14px;
+  font-size: var(--mb2-font-size-sm);
+  font-weight: 500;
+  color: #fff;
+  text-decoration: none;
+  opacity: 0.7;
+  border-bottom: 2px solid transparent;
+  transition: opacity var(--mb2-transition-fast), border-color var(--mb2-transition-fast);
+  box-sizing: border-box;
+}
+.mb2-appbar-nav-item:hover { opacity: 1; color: #fff; text-decoration: none; }
+.mb2-appbar-nav-item.active { opacity: 1; border-bottom-color: var(--mb2-medium); }
+
+/* Upgrade CTA -- pill button in navbar */
+.mb2-upgrade-cta {
+  color: #fff !important;
+  opacity: 1 !important;
+  background: rgba(44, 161, 155, 0.2);
+  border-radius: var(--mb2-radius-sm);
+  padding: 4px 12px !important;
+  margin-left: 8px;
+  font-size: 11px !important;
+  letter-spacing: 0.02em;
+}
+.mb2-upgrade-cta:hover {
+  background: rgba(44, 161, 155, 0.35);
+}
+
+/* Buttons */
+.mb2-btn {
+  font-family: var(--mb2-font-family);
+  font-size: var(--mb2-font-size-sm);
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: var(--mb2-radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--mb2-transition-fast);
+  display: inline-block;
+  text-decoration: none;
+}
+
+.mb2-btn-primary {
+  background: var(--mb2-medium);
+  color: #fff;
+  border-color: var(--mb2-medium);
+}
+
+.mb2-btn-primary:hover {
+  background: var(--mb2-professional);
+  border-color: var(--mb2-professional);
+}
+
+.mb2-btn-outline {
+  background: transparent;
+  color: var(--mb2-light);
+  border-color: var(--mb2-light);
+}
+
+.mb2-btn-outline:hover {
+  background: rgba(141, 214, 209, 0.1);
+}
+
+/* Card */
+.mb2-card {
+  background: #fff;
+  border-radius: var(--mb2-radius-md);
+  box-shadow: var(--mb2-shadow-sm);
+  transition: box-shadow var(--mb2-transition-base), transform var(--mb2-transition-base);
+}
+
+.mb2-card:hover {
+  box-shadow: var(--mb2-shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dashboard-row {
+  animation: fadeInUp 0.4s ease both;
+}
+.dashboard-row:nth-child(2) { animation-delay: 0.08s; }
+.dashboard-row:nth-child(3) { animation-delay: 0.16s; }
+.dashboard-row:nth-child(4) { animation-delay: 0.24s; }

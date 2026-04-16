@@ -1,111 +1,311 @@
 {
   "model": "Web",
-  "sourcetype": "synthetic:web",
-  "tags": ["web"],
+  "sourcetype": "cimdg:synthetic:web",
+  "tags": [
+    "web"
+  ],
   "fields": {
     "action": {
       "type": "weighted_choice",
       "values": [
-        {"value": "allowed", "weight": 90},
-        {"value": "blocked", "weight": 8},
-        {"value": "deferred", "weight": 2}
+        {
+          "value": "allowed",
+          "weight": 90
+        },
+        {
+          "value": "blocked",
+          "weight": 8
+        },
+        {
+          "value": "deferred",
+          "weight": 2
+        }
       ]
     },
-    "bytes_in": {"type": "lognormal", "mu": 7, "sigma": 1.5, "max": 500000, "precision": 0},
-    "bytes_out": {"type": "lognormal", "mu": 9, "sigma": 2, "max": 10000000, "precision": 0},
+    "bytes_in": {
+      "type": "lognormal",
+      "mu": 7,
+      "sigma": 1.5,
+      "max": 500000,
+      "precision": 0
+    },
+    "bytes_out": {
+      "type": "lognormal",
+      "mu": 9,
+      "sigma": 2,
+      "max": 10000000,
+      "precision": 0
+    },
     "category": {
       "type": "weighted_choice",
       "values": [
-        {"value": "business", "weight": 30},
-        {"value": "technology", "weight": 20},
-        {"value": "news", "weight": 15},
-        {"value": "shopping", "weight": 10},
-        {"value": "social_media", "weight": 10},
-        {"value": "streaming", "weight": 5},
-        {"value": "education", "weight": 5},
-        {"value": "malware", "weight": 3},
-        {"value": "uncategorized", "weight": 2}
+        {
+          "value": "business",
+          "weight": 30
+        },
+        {
+          "value": "technology",
+          "weight": 20
+        },
+        {
+          "value": "news",
+          "weight": 15
+        },
+        {
+          "value": "shopping",
+          "weight": 10
+        },
+        {
+          "value": "social_media",
+          "weight": 10
+        },
+        {
+          "value": "streaming",
+          "weight": 5
+        },
+        {
+          "value": "education",
+          "weight": 5
+        },
+        {
+          "value": "malware",
+          "weight": 3
+        },
+        {
+          "value": "uncategorized",
+          "weight": 2
+        }
       ]
     },
-    "dest": {"type": "external_domain"},
-    "duration": {"type": "number", "min": 0.01, "max": 30.0, "precision": 3},
+    "dest": {
+      "type": "external_domain"
+    },
+    "duration": {
+      "type": "number",
+      "min": 0.01,
+      "max": 30.0,
+      "precision": 3
+    },
     "http_content_type": {
       "type": "weighted_choice",
       "values": [
-        {"value": "text/html", "weight": 35},
-        {"value": "application/json", "weight": 25},
-        {"value": "image/png", "weight": 10},
-        {"value": "text/css", "weight": 8},
-        {"value": "application/javascript", "weight": 8},
-        {"value": "image/jpeg", "weight": 5},
-        {"value": "application/xml", "weight": 5},
-        {"value": "application/octet-stream", "weight": 4}
+        {
+          "value": "text/html",
+          "weight": 35
+        },
+        {
+          "value": "application/json",
+          "weight": 25
+        },
+        {
+          "value": "image/png",
+          "weight": 10
+        },
+        {
+          "value": "text/css",
+          "weight": 8
+        },
+        {
+          "value": "application/javascript",
+          "weight": 8
+        },
+        {
+          "value": "image/jpeg",
+          "weight": 5
+        },
+        {
+          "value": "application/xml",
+          "weight": 5
+        },
+        {
+          "value": "application/octet-stream",
+          "weight": 4
+        }
       ]
     },
     "http_method": {
       "type": "weighted_choice",
       "values": [
-        {"value": "GET", "weight": 60},
-        {"value": "POST", "weight": 25},
-        {"value": "PUT", "weight": 8},
-        {"value": "DELETE", "weight": 4},
-        {"value": "HEAD", "weight": 2},
-        {"value": "OPTIONS", "weight": 1}
+        {
+          "value": "GET",
+          "weight": 60
+        },
+        {
+          "value": "POST",
+          "weight": 25
+        },
+        {
+          "value": "PUT",
+          "weight": 8
+        },
+        {
+          "value": "DELETE",
+          "weight": 4
+        },
+        {
+          "value": "HEAD",
+          "weight": 2
+        },
+        {
+          "value": "OPTIONS",
+          "weight": 1
+        }
       ]
     },
     "http_referrer": {
       "type": "weighted_choice",
       "values": [
-        {"value": "https://google.com", "weight": 30},
-        {"value": "https://example.com/page", "weight": 20},
-        {"value": "-", "weight": 30},
-        {"value": "https://internal.corp/dashboard", "weight": 15},
-        {"value": "https://bing.com", "weight": 5}
+        {
+          "value": "https://google.com",
+          "weight": 30
+        },
+        {
+          "value": "https://example.com/page",
+          "weight": 20
+        },
+        {
+          "value": "-",
+          "weight": 30
+        },
+        {
+          "value": "https://internal.corp/dashboard",
+          "weight": 15
+        },
+        {
+          "value": "https://bing.com",
+          "weight": 5
+        }
       ]
     },
     "http_user_agent": {
       "type": "weighted_choice",
       "values": [
-        {"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0", "weight": 35},
-        {"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Safari/17.2", "weight": 20},
-        {"value": "Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0", "weight": 15},
-        {"value": "curl/7.88.1", "weight": 10},
-        {"value": "python-requests/2.31.0", "weight": 10},
-        {"value": "Splunk/9.2.0", "weight": 5},
-        {"value": "Go-http-client/2.0", "weight": 5}
+        {
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0",
+          "weight": 35
+        },
+        {
+          "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Safari/17.2",
+          "weight": 20
+        },
+        {
+          "value": "Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0",
+          "weight": 15
+        },
+        {
+          "value": "curl/7.88.1",
+          "weight": 10
+        },
+        {
+          "value": "python-requests/2.31.0",
+          "weight": 10
+        },
+        {
+          "value": "Splunk/9.2.0",
+          "weight": 5
+        },
+        {
+          "value": "Go-http-client/2.0",
+          "weight": 5
+        }
       ]
     },
-    "src": {"type": "src_ip"},
+    "src": {
+      "type": "src_ip"
+    },
     "status": {
       "type": "weighted_choice",
       "values": [
-        {"value": "200", "weight": 70},
-        {"value": "301", "weight": 5},
-        {"value": "302", "weight": 5},
-        {"value": "304", "weight": 8},
-        {"value": "400", "weight": 3},
-        {"value": "401", "weight": 2},
-        {"value": "403", "weight": 2},
-        {"value": "404", "weight": 2},
-        {"value": "500", "weight": 2},
-        {"value": "503", "weight": 1}
+        {
+          "value": "200",
+          "weight": 70
+        },
+        {
+          "value": "301",
+          "weight": 5
+        },
+        {
+          "value": "302",
+          "weight": 5
+        },
+        {
+          "value": "304",
+          "weight": 8
+        },
+        {
+          "value": "400",
+          "weight": 3
+        },
+        {
+          "value": "401",
+          "weight": 2
+        },
+        {
+          "value": "403",
+          "weight": 2
+        },
+        {
+          "value": "404",
+          "weight": 2
+        },
+        {
+          "value": "500",
+          "weight": 2
+        },
+        {
+          "value": "503",
+          "weight": 1
+        }
       ]
     },
-    "url": {"type": "url"},
-    "url_domain": {"type": "external_domain"},
+    "url": {
+      "type": "url"
+    },
+    "url_domain": {
+      "type": "external_domain"
+    },
     "uri_path": {
       "type": "choice",
-      "values": ["/", "/index.html", "/api/v1/users", "/login", "/dashboard", "/search", "/api/data", "/static/main.js", "/images/logo.png", "/docs/guide", "/admin/settings"]
+      "values": [
+        "/",
+        "/index.html",
+        "/api/v1/users",
+        "/login",
+        "/dashboard",
+        "/search",
+        "/api/data",
+        "/static/main.js",
+        "/images/logo.png",
+        "/docs/guide",
+        "/admin/settings"
+      ]
     },
-    "user": {"type": "username"},
+    "user": {
+      "type": "username"
+    },
     "vendor_product": {
       "type": "weighted_choice",
       "values": [
-        {"value": "Zscaler", "weight": 30},
-        {"value": "Palo Alto Proxy", "weight": 25},
-        {"value": "Squid", "weight": 20},
-        {"value": "Blue Coat ProxySG", "weight": 15},
-        {"value": "F5 BIG-IP", "weight": 10}
+        {
+          "value": "Zscaler",
+          "weight": 30
+        },
+        {
+          "value": "Palo Alto Proxy",
+          "weight": 25
+        },
+        {
+          "value": "Squid",
+          "weight": 20
+        },
+        {
+          "value": "Blue Coat ProxySG",
+          "weight": 15
+        },
+        {
+          "value": "F5 BIG-IP",
+          "weight": 10
+        }
       ]
     }
   },
@@ -114,13 +314,28 @@
       "category": {
         "type": "weighted_choice",
         "values": [
-          {"value": "malware", "weight": 40},
-          {"value": "phishing", "weight": 30},
-          {"value": "adult", "weight": 15},
-          {"value": "gambling", "weight": 15}
+          {
+            "value": "malware",
+            "weight": 40
+          },
+          {
+            "value": "phishing",
+            "weight": 30
+          },
+          {
+            "value": "adult",
+            "weight": 15
+          },
+          {
+            "value": "gambling",
+            "weight": 15
+          }
         ]
       },
-      "status": {"type": "static", "value": "403"}
+      "status": {
+        "type": "static",
+        "value": "403"
+      }
     }
   }
 }

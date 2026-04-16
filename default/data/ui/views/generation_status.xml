@@ -1,0 +1,134 @@
+<dashboard version="1.1" stylesheet="css/brand.css, css/footer.css">
+  <label>Generation Status</label>
+  <description>Monitor active generators, event volumes, and index health</description>
+
+  <row>
+    <html>
+      <div class="mb2-appbar">
+        <a href="/app/cimdg" class="mb2-appbar-logo-link">
+          <img src="/static/app/cimdg/mb2/logos/symbol-light.png" alt="MB2" class="mb2-appbar-logo" />
+        </a>
+        <nav class="mb2-appbar-nav">
+          <a href="/app/cimdg/generator_config" class="mb2-appbar-nav-item">Generator</a>
+          <a href="/app/cimdg/generation_status" class="mb2-appbar-nav-item active">Status</a>
+          <a href="/app/cimdg/cim_validation" class="mb2-appbar-nav-item">Validation</a>
+        </nav>
+      </div>
+    </html>
+  </row>
+
+  <!-- Row 1: Key metrics -->
+  <!-- Row 2: Events over time -->
+  <!-- Row 3: Configured generators -->
+  <row>
+    <panel>
+      <title>Total Events (24h)</title>
+      <single>
+        <search>
+          <query>| tstats count where index=* sourcetype=cimdg:synthetic:* earliest=-24h</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="rangeColors">["#999999","#2ca19b"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Index Size</title>
+      <single>
+        <search>
+          <query>| rest /services/data/indexes/synthetic_cim splunk_server=local
+| eval label=round(currentDBSizeMB,1)." MB / ".round(maxTotalDataSizeMB,1)." MB"
+| table label</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="field">label</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Active Generators</title>
+      <single>
+        <search>
+          <query>| rest /services/data/inputs/cim_synthetic_data splunk_server=local
+| where disabled=="0" OR disabled=0
+| stats count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="rangeColors">["#999999","#dc4e41"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="useColors">true</option>
+        <option name="underLabel">running</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Events per Model (last 4 hours)</title>
+      <chart>
+        <search>
+          <query>| tstats count where index=* sourcetype=cimdg:synthetic:* earliest=-4h by sourcetype _time span=5m</query>
+          <earliest>-4h@m</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.axisTitleX.text">Time</option>
+        <option name="charting.axisTitleY.text">Events</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Events by Model (24h)</title>
+      <chart>
+        <search>
+          <query>| tstats count where index=* sourcetype=cimdg:synthetic:* earliest=-24h by sourcetype</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Configured Generators</title>
+      <table>
+        <search>
+          <query>| rest /services/data/inputs/cim_synthetic_data splunk_server=local
+| eval status=if(disabled=="0" OR disabled=0, "Active", "Disabled")
+| table title, model, events_per_interval, index, interval, status
+| rename title as "Input", model as "Model", events_per_interval as "Events/Interval", index as "Index", interval as "Interval (s)"
+| sort status, Input</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <html>
+      <div class="mb2-footer">
+        <p>&#169; 2026 MB2 Analytics. All rights reserved.</p>
+        <div class="footer-brand">
+          <a href="https://mb2analytics.com" target="_blank" class="footer-brand-link">
+            <img src="/static/app/cimdg/mb2/logos/logo-dark.png" class="footer-brand-logo" alt="MB2 Analytics" />
+            MB2 Analytics
+          </a>
+        </div>
+      </div>
+    </html>
+  </row>
+</dashboard>

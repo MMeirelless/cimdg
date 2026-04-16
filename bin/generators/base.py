@@ -13,10 +13,11 @@ import os
 import random
 import string
 import time
+import uuid
 
 
 # ---------------------------------------------------------------------------
-# Entity pools — shared across all generators for cross-model correlation
+# Entity pools  -  shared across all generators for cross-model correlation
 # ---------------------------------------------------------------------------
 
 class EntityPool:
@@ -36,6 +37,7 @@ class EntityPool:
         self._initialized = True
         self._seed = int(time.time())
         self._rng = random.Random(self._seed)
+        self.external_ratio = 0.2  # Configurable: fraction of external IPs in src
         self._build_pools()
 
     def _build_pools(self):
@@ -60,6 +62,24 @@ class EntityPool:
             "zoom.us", "salesforce.com", "okta.com", "duo.com",
             "example.com", "example.org", "example.net",
             "cdn.jsdelivr.net", "fonts.googleapis.com", "api.stripe.com"
+        ]
+        self.mac_addresses = [
+            ":".join(f"{self._rng.randint(0, 255):02x}" for _ in range(6))
+            for _ in range(30)
+        ]
+        self.email_subjects = [
+            "Meeting agenda for Monday", "Q4 Budget Review",
+            "Action Required: Password Expiry", "Invoice #INV-2026-0042",
+            "Weekly Status Report", "Urgent: System Maintenance",
+            "Re: Project Timeline Update", "FW: Customer Feedback",
+            "Quarterly Compliance Report", "New Hire Onboarding",
+            "Security Alert: Suspicious Activity", "IT Ticket Update",
+            "Reminder: All-Hands Meeting", "Document Shared With You",
+            "Purchase Order Confirmation", "Shipping Notification",
+        ]
+        self.certificate_issuers = [
+            "DigiCert Inc", "Let's Encrypt", "Sectigo Limited",
+            "GlobalSign", "GoDaddy", "Comodo CA", "Entrust",
         ]
 
     def _generate_ips(self, cidr, count):
@@ -110,8 +130,8 @@ class EntityPool:
         return random.choice(self.external_ips)
 
     def random_src_ip(self):
-        """80% internal, 20% external."""
-        if random.random() < 0.8:
+        """Internal vs external based on external_ratio (default 20% external)."""
+        if random.random() >= self.external_ratio:
             return self.random_internal_ip()
         return self.random_external_ip()
 
@@ -136,9 +156,18 @@ class EntityPool:
     def random_external_domain(self):
         return random.choice(self.external_domains)
 
+    def random_mac_address(self):
+        return random.choice(self.mac_addresses)
+
+    def random_email_subject(self):
+        return random.choice(self.email_subjects)
+
+    def random_certificate_issuer(self):
+        return random.choice(self.certificate_issuers)
+
 
 # ---------------------------------------------------------------------------
-# Timestamp generation — business-hours Gaussian distribution
+# Timestamp generation  -  business-hours Gaussian distribution
 # ---------------------------------------------------------------------------
 
 def generate_timestamp(base_time=None, timerange_seconds=3600):
@@ -207,7 +236,7 @@ class BaseGenerator:
         return {}
 
     def get_sourcetype(self):
-        return self.template.get("sourcetype", f"synthetic:{self.model_name}")
+        return self.template.get("sourcetype", f"cimdg:synthetic:{self.model_name}")
 
     def generate_field(self, field_def):
         """Dispatch field generation based on type."""
@@ -242,6 +271,20 @@ class BaseGenerator:
             "email_address": self._gen_email,
             "file_path": self._gen_file_path,
             "file_name": self._gen_file_name,
+            "mac_address": lambda fd: self.pool.random_mac_address(),
+            "session_id": lambda fd: uuid.uuid4().hex,
+            "cve_id": self._gen_cve_id,
+            "certificate_serial": lambda fd: uuid.uuid4().hex[:16].upper(),
+            "certificate_subject": self._gen_certificate_subject,
+            "email_subject": lambda fd: self.pool.random_email_subject(),
+            "message_id": self._gen_message_id,
+            "registry_path": self._gen_registry_path,
+            "registry_value": self._gen_registry_value,
+            "service_name": self._gen_service_name,
+            "ticket_id": self._gen_ticket_id,
+            "timestamp_future": self._gen_timestamp_future,
+            "file_size": lambda fd: random.randint(
+                fd.get("min", 100), fd.get("max", 10000000)),
         }
 
         gen_func = dispatch.get(field_type)
@@ -313,6 +356,68 @@ class BaseGenerator:
                  "agent", "service", "monitor", "worker", "task", "process"]
         return random.choice(names) + random.choice(extensions)
 
+    def _gen_cve_id(self, field_def):
+        year = random.randint(2019, 2026)
+        num = random.randint(1000, 50000)
+        return f"CVE-{year}-{num}"
+
+    def _gen_certificate_subject(self, field_def):
+        domain = self.pool.random_external_domain()
+        org = random.choice([
+            "Acme Corp", "Globex Inc", "Initech LLC", "Contoso Ltd",
+            "Example Org", "TechCorp", "CloudServices Inc",
+        ])
+        country = random.choice(["US", "GB", "DE", "FR", "JP", "CA", "AU"])
+        return f"CN={domain},O={org},C={country}"
+
+    def _gen_message_id(self, field_def):
+        rand_part = uuid.uuid4().hex[:12]
+        domain = random.choice(["mail.corp.local", "smtp.company.com", "mx.example.com"])
+        return f"<{rand_part}@{domain}>"
+
+    def _gen_registry_path(self, field_def):
+        hives = ["HKLM", "HKCU", "HKU"]
+        paths = [
+            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\App",
+            "SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+            "SYSTEM\\CurrentControlSet\\Services\\SomeService",
+            "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon",
+            "SOFTWARE\\Classes\\CLSID\\{random}",
+            "SYSTEM\\CurrentControlSet\\Control\\SecurityProviders",
+            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders",
+        ]
+        return f"{random.choice(hives)}\\{random.choice(paths)}"
+
+    def _gen_registry_value(self, field_def):
+        names = [
+            "ImagePath", "Start", "Type", "DisplayName", "Description",
+            "ObjectName", "ErrorControl", "DependOnService", "FailureActions",
+        ]
+        return random.choice(names)
+
+    def _gen_service_name(self, field_def):
+        services = [
+            "wuauserv", "WinDefend", "Spooler", "BITS", "W32Time",
+            "Dhcp", "Dnscache", "EventLog", "LanmanServer", "LanmanWorkstation",
+            "sshd", "nginx", "httpd", "mysqld", "postgresql",
+            "cron", "docker", "kubelet", "splunkd", "rsyslog",
+        ]
+        return random.choice(services)
+
+    def _gen_ticket_id(self, field_def):
+        prefix = field_def.get("prefix", random.choice(["INC", "CHG", "PRB", "REQ"]))
+        num = random.randint(100000, 999999)
+        return f"{prefix}-{num}"
+
+    def _gen_timestamp_future(self, field_def):
+        """Generate a future timestamp (e.g., for certificate expiry)."""
+        days_ahead = random.randint(
+            field_def.get("min_days", -30),
+            field_def.get("max_days", 365),
+        )
+        return time.time() + (days_ahead * 86400)
+
     def apply_dependencies(self, event, dependencies):
         """Apply conditional field overrides based on event values."""
         if not dependencies:
@@ -383,11 +488,6 @@ def register_generator(model_name):
 class GeneratorFactory:
     """Factory for creating model-specific generators."""
 
-    SUPPORTED_MODELS = [
-        "authentication", "network_traffic", "web", "endpoint",
-        "malware", "intrusion_detection", "dns"
-    ]
-
     @classmethod
     def create(cls, model_name):
         """Create a generator for the given model name."""
@@ -396,11 +496,11 @@ class GeneratorFactory:
         if generator_cls is None:
             raise ValueError(
                 f"Unknown model: {model_name}. "
-                f"Supported models: {', '.join(cls.SUPPORTED_MODELS)}"
+                f"Supported models: {', '.join(cls.list_models())}"
             )
         return generator_cls()
 
     @classmethod
     def list_models(cls):
-        """Return list of supported model names."""
-        return list(_GENERATOR_REGISTRY.keys())
+        """Return list of registered model names."""
+        return sorted(_GENERATOR_REGISTRY.keys())

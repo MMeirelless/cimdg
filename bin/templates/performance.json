@@ -1,0 +1,34 @@
+{
+  "model": "Performance",
+  "sourcetype": "cimdg:synthetic:performance",
+  "tags": ["performance", "os"],
+  "fields": {
+    "dest": {"type": "hostname"},
+    "cpu_load_percent": {"type": "number", "min": 1, "max": 100, "precision": 1},
+    "mem": {"type": "number", "min": 4096, "max": 131072},
+    "mem_used": {"type": "number", "min": 1024, "max": 120000},
+    "mem_free": {"type": "number", "min": 512, "max": 65536},
+    "storage_used_percent": {"type": "number", "min": 5, "max": 98, "precision": 1},
+    "thruput": {"type": "lognormal", "mu": 8, "sigma": 2, "max": 1000000, "precision": 0},
+    "os": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "Linux", "weight": 50},
+        {"value": "Windows Server 2019", "weight": 25},
+        {"value": "Windows Server 2022", "weight": 15},
+        {"value": "Ubuntu 22.04", "weight": 10}
+      ]
+    },
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "Splunk UF", "weight": 30},
+        {"value": "collectd", "weight": 20},
+        {"value": "Telegraf", "weight": 20},
+        {"value": "Zabbix", "weight": 15},
+        {"value": "Nagios", "weight": 15}
+      ]
+    }
+  },
+  "dependencies": {}
+}

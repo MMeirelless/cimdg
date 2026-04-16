@@ -1,0 +1,83 @@
+{
+  "model": "Network Sessions",
+  "sourcetype": "cimdg:synthetic:network_sessions",
+  "tags": [
+    "network",
+    "session"
+  ],
+  "fields": {
+    "action": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "allowed",
+          "weight": 85
+        },
+        {
+          "value": "blocked",
+          "weight": 10
+        },
+        {
+          "value": "teardown",
+          "weight": 5
+        }
+      ]
+    },
+    "dest": {
+      "type": "dest_ip"
+    },
+    "dest_ip": {
+      "type": "dest_ip"
+    },
+    "dest_mac": {
+      "type": "mac_address"
+    },
+    "duration": {
+      "type": "number",
+      "min": 1,
+      "max": 86400,
+      "precision": 1
+    },
+    "session_id": {
+      "type": "session_id"
+    },
+    "src": {
+      "type": "src_ip"
+    },
+    "src_ip": {
+      "type": "src_ip"
+    },
+    "src_mac": {
+      "type": "mac_address"
+    },
+    "user": {
+      "type": "username"
+    },
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "Cisco ISE",
+          "weight": 25
+        },
+        {
+          "value": "Microsoft DHCP",
+          "weight": 20
+        },
+        {
+          "value": "Infoblox",
+          "weight": 15
+        },
+        {
+          "value": "Palo Alto GlobalProtect",
+          "weight": 20
+        },
+        {
+          "value": "Cisco AnyConnect",
+          "weight": 20
+        }
+      ]
+    }
+  },
+  "dependencies": {}
+}

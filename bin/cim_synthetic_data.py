@@ -1,5 +1,5 @@
 """
-CIM Data Generator — Modular Input for continuous event streaming.
+CIM Data Generator  -  Modular Input for continuous event streaming.
 
 Each input stanza specifies a CIM data model, events per interval,
 and target index. Events are generated as CIM-compliant JSON.
@@ -15,10 +15,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from splunklib.modularinput import Script, Scheme, Argument, Event, EventWriter
 
+import generators  # noqa: F401  -  auto-discovers and registers all generators
 from generators.base import GeneratorFactory
-# Import all generators to register them
-from generators import authentication, network_traffic, web, endpoint
-from generators import malware, intrusion_detection, dns
 
 
 MAX_EPS = 1000
@@ -91,12 +89,15 @@ class CIMGeneratorInput(Script):
             )
 
             for event_data in events:
-                event = Event()
-                event.stanza = stanza_name
-                event.data = generator.format_event(event_data)
-                event.index = index
-                event.sourcetype = sourcetype
-                event.time = event_data.get("_time", now)
+                event = Event(
+                    data=generator.format_event(event_data),
+                    stanza=stanza_name,
+                    time=event_data.get("_time", now),
+                    index=index,
+                    sourcetype=sourcetype,
+                    source="cimdg:modinput:%s" % model,
+                    host="cimdg",
+                )
                 ew.write_event(event)
 
 

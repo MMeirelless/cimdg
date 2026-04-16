@@ -1,0 +1,100 @@
+{
+  "model": "Ticket Management",
+  "sourcetype": "cimdg:synthetic:ticket_management",
+  "tags": ["ticketing"],
+  "fields": {
+    "ticket_id": {"type": "ticket_id"},
+    "status": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "new", "weight": 15},
+        {"value": "in_progress", "weight": 35},
+        {"value": "resolved", "weight": 30},
+        {"value": "closed", "weight": 15},
+        {"value": "pending", "weight": 5}
+      ]
+    },
+    "severity": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "critical", "weight": 5},
+        {"value": "high", "weight": 15},
+        {"value": "medium", "weight": 45},
+        {"value": "low", "weight": 35}
+      ]
+    },
+    "priority": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "1", "weight": 5},
+        {"value": "2", "weight": 20},
+        {"value": "3", "weight": 45},
+        {"value": "4", "weight": 30}
+      ]
+    },
+    "description": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "User unable to access email", "weight": 12},
+        {"value": "VPN connection dropping intermittently", "weight": 10},
+        {"value": "Application performance degradation", "weight": 10},
+        {"value": "Password reset request", "weight": 15},
+        {"value": "New software installation request", "weight": 10},
+        {"value": "Printer not responding", "weight": 8},
+        {"value": "Server disk space alert", "weight": 8},
+        {"value": "Network connectivity issue", "weight": 10},
+        {"value": "Security incident investigation", "weight": 5},
+        {"value": "Firewall rule change request", "weight": 7},
+        {"value": "Database backup failure", "weight": 5}
+      ]
+    },
+    "user": {"type": "username"},
+    "assignment_group": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "Service Desk", "weight": 30},
+        {"value": "Network Operations", "weight": 15},
+        {"value": "Security Operations", "weight": 15},
+        {"value": "Database Administration", "weight": 10},
+        {"value": "Application Support", "weight": 15},
+        {"value": "Infrastructure", "weight": 15}
+      ]
+    },
+    "category": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "incident", "weight": 45},
+        {"value": "change", "weight": 25},
+        {"value": "problem", "weight": 15},
+        {"value": "request", "weight": 15}
+      ]
+    },
+    "urgency": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "high", "weight": 15},
+        {"value": "medium", "weight": 50},
+        {"value": "low", "weight": 35}
+      ]
+    },
+    "impact": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "high", "weight": 10},
+        {"value": "medium", "weight": 40},
+        {"value": "low", "weight": 50}
+      ]
+    },
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "ServiceNow", "weight": 40},
+        {"value": "Jira Service Management", "weight": 25},
+        {"value": "BMC Remedy", "weight": 15},
+        {"value": "Zendesk", "weight": 10},
+        {"value": "Freshdesk", "weight": 10}
+      ]
+    }
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,178 @@
+<form version="1.1" stylesheet="css/brand.css, css/footer.css">
+  <label>CIM Validation</label>
+  <description>Validate CIM compliance of generated events across data models</description>
+
+  <row>
+    <html>
+      <div class="mb2-appbar">
+        <a href="/app/cimdg" class="mb2-appbar-logo-link">
+          <img src="/static/app/cimdg/mb2/logos/symbol-light.png" alt="MB2" class="mb2-appbar-logo" />
+        </a>
+        <nav class="mb2-appbar-nav">
+          <a href="/app/cimdg/generator_config" class="mb2-appbar-nav-item">Generator</a>
+          <a href="/app/cimdg/generation_status" class="mb2-appbar-nav-item">Status</a>
+          <a href="/app/cimdg/cim_validation" class="mb2-appbar-nav-item active">Validation</a>
+        </nav>
+      </div>
+    </html>
+  </row>
+
+  <!-- Row 1: Model coverage overview -->
+  <!-- Row 2: Data model validation -->
+  <!-- Row 3: Field presence for selected sourcetype -->
+  <!-- Row 4: Sample events from data model -->
+  <!-- Row 5: Raw event inspection -->
+  <fieldset submitButton="false">
+    <input type="dropdown" token="val_model" searchWhenChanged="true">
+      <label>Data Model</label>
+      <choice value="Authentication">Authentication</choice>
+      <choice value="Network_Traffic">Network Traffic</choice>
+      <choice value="Web">Web</choice>
+      <choice value="Endpoint">Endpoint (Processes)</choice>
+      <choice value="Malware">Malware</choice>
+      <choice value="Intrusion_Detection">Intrusion Detection</choice>
+      <choice value="Network_Resolution_DNS">DNS</choice>
+      <choice value="Vulnerabilities">Vulnerabilities</choice>
+      <choice value="Change">Change</choice>
+      <choice value="Email">Email</choice>
+      <choice value="Network_Sessions">Network Sessions</choice>
+      <choice value="Alerts">Alerts</choice>
+      <choice value="DLP">DLP</choice>
+      <choice value="Certificates">Certificates</choice>
+      <choice value="Updates">Updates</choice>
+      <default>Authentication</default>
+    </input>
+    <input type="dropdown" token="val_sourcetype" searchWhenChanged="true">
+      <label>Sourcetype</label>
+      <search>
+        <query>| tstats count where index=* sourcetype=cimdg:synthetic:* by sourcetype
+| sort sourcetype
+| fields sourcetype</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+      <fieldForLabel>sourcetype</fieldForLabel>
+      <fieldForValue>sourcetype</fieldForValue>
+      <choice value="cimdg:synthetic:*">All CIMDG sourcetypes</choice>
+      <default>cimdg:synthetic:*</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>CIM Data Model Coverage - Event Counts (last 24h)</title>
+      <table>
+        <search>
+          <query>| tstats count where index=* sourcetype=cimdg:synthetic:* by sourcetype
+| sort -count
+| rename sourcetype as "Sourcetype", count as "Event Count"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Data Model Validation: $val_model$</title>
+      <single>
+        <search>
+          <query>| datamodel $val_model$ search
+| search index=* sourcetype=cimdg:synthetic:*
+| stats count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="underLabel">Events mapped to $val_model$ data model</option>
+        <option name="colorMode">block</option>
+        <option name="rangeColors">["#dc4e41","#53a051"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="useColors">true</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Events by Sourcetype in $val_model$</title>
+      <chart>
+        <search>
+          <query>| datamodel $val_model$ search
+| search sourcetype=cimdg:synthetic:*
+| stats count by sourcetype</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Field Presence - $val_sourcetype$ (sample 100 events)</title>
+      <table>
+        <search>
+          <query>index=* sourcetype=$val_sourcetype$ earliest=-24h
+| head 100
+| foreach * [eval &lt;&lt;FIELD&gt;&gt;_present=if(isnotnull('&lt;&lt;FIELD&gt;&gt;') AND '&lt;&lt;FIELD&gt;&gt;'!="", 1, 0)]
+| stats avg(*_present) as *
+| foreach * [eval &lt;&lt;FIELD&gt;&gt;=round('&lt;&lt;FIELD&gt;&gt;'*100, 0)."%"]
+| transpose
+| rename column as "Field", "row 1" as "Completeness"
+| search NOT Field IN ("_time_present", "_raw_present", "host_present", "source_present", "sourcetype_present", "index_present", "linecount_present", "splunk_server_present", "punct_present", "timeendpos_present", "timestartpos_present")
+| sort -Completeness</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Recent Events - $val_model$ (last 10)</title>
+      <table>
+        <search>
+          <query>| datamodel $val_model$ search
+| search sourcetype=cimdg:synthetic:*
+| head 10
+| table _time sourcetype action user src dest *</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Raw Events - $val_sourcetype$ (last 5)</title>
+      <event>
+        <search>
+          <query>index=* sourcetype=$val_sourcetype$ earliest=-24h
+| head 5</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">5</option>
+      </event>
+    </panel>
+  </row>
+
+  <row>
+    <html>
+      <div class="mb2-footer">
+        <p>&#169; 2026 MB2 Analytics. All rights reserved.</p>
+        <div class="footer-brand">
+          <a href="https://mb2analytics.com" target="_blank" class="footer-brand-link">
+            <img src="/static/app/cimdg/mb2/logos/logo-dark.png" class="footer-brand-logo" alt="MB2 Analytics" />
+            MB2 Analytics
+          </a>
+        </div>
+      </div>
+    </html>
+  </row>
+</form>
