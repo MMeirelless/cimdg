@@ -96,13 +96,56 @@ body,
   font-family: var(--mb2-font-family) !important;
 }
 
-/* ---- Edge-to-Edge Layout ---- */
+/* ---- Splunk Dashboard Object Overrides ---- */
+.dashboard-header,
+.splunk-header {
+  display: none;
+}
+
+/* ---- Layout ---- */
 .dashboard-body { padding: 0 !important; }
-.dashboard-row { margin: 0 !important; padding: 0 !important; }
+
+/* Default: content rows get horizontal padding so tables/panels aren't tight to the screen */
+.dashboard-row {
+  margin: 0 !important;
+  padding: 0 32px !important;
+}
 .dashboard-row .dashboard-cell { padding: 0 !important; }
 .dashboard-row .panel-element-row,
-.dashboard-row .panel-body { padding: 0 !important; }
-.dashboard-panel { background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
+.dashboard-row .panel-body { padding: 0px 0 !important; }
+.dashboard-panel {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Full-width rows (navbar, page header, footer) - edge to edge */
+#navbar_row,
+#header_row,
+#footer_row {
+  padding: 0 !important;
+}
+
+/* ---- Page Header (title + description) — matches DASH .style-manager-header ---- */
+.mb2-page-header {
+  padding: 10px 32px;
+}
+.mb2-page-title {
+  font-family: var(--mb2-font-family);
+  font-size: var(--mb2-font-size-lg);
+  font-weight: 700;
+  color: var(--mb2-dark);
+  margin: 0 0 4px;
+  line-height: 1.2;
+}
+.mb2-page-desc {
+  font-family: var(--mb2-font-family);
+  font-size: var(--mb2-font-size-sm);
+  color: var(--mb2-professional);
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
 
 /* ---- Shared Components ---- */
 

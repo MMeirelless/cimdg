@@ -1,8 +1,8 @@
-<form version="1.1" script="js/generator_config.js" stylesheet="css/brand.css, css/footer.css">
+<form version="1.1" script="js/generator_config.js" stylesheet="css/brand.css, css/footer.css" hideSplunkBar="true" hideAppBar="true" hideTitle="true" hideEdit="true">
   <label>Generator Configuration</label>
   <description>Configure and generate CIM-compliant synthetic data</description>
 
-  <row>
+  <row id="navbar_row">
     <html>
       <div class="mb2-appbar">
         <a href="/app/cimdg" class="mb2-appbar-logo-link">
@@ -17,92 +17,104 @@
     </html>
   </row>
 
-  <!-- Row 0: Active Generator Warning Banner -->
-  <!-- Row 0.5: Attack Scenario Playbooks -->
+  <row id="header_row">
+    <html>
+      <div class="mb2-page-header">
+        <h2 class="mb2-page-title">Generator Configuration</h2>
+        <p class="mb2-page-desc">Configure and trigger CIM-compliant synthetic data generation. Preview events, run attack scenarios, and manage continuous generators.</p>
+      </div>
+    </html>
+  </row>
+
+  <!-- Row 0: Global Filters -->
+  <!-- Row 0.5: Active Generator Warning Banner -->
+  <!-- Row 0.75: Attack Scenario Playbooks -->
   <!-- Row 1: Generate & Index (via JS + REST) -->
   <!-- Row 2: Preview Generated Events -->
   <!-- Row 3: Continuous Generators (JS-managed with toggle) -->
   <!-- Row 4: Recent Generated Data -->
   <!-- Row 5: CIM Compliance Quick Check -->
-  <fieldset submitButton="false">
-    <input type="dropdown" token="selected_model" searchWhenChanged="true">
-      <label>CIM Data Model</label>
-      <choice value="alerts">Alerts</choice>
-      <choice value="authentication">Authentication</choice>
-      <choice value="certificates">Certificates</choice>
-      <choice value="change">Change</choice>
-      <choice value="data_access">Data Access</choice>
-      <choice value="databases">Databases</choice>
-      <choice value="dlp">Data Loss Prevention</choice>
-      <choice value="dns">DNS (Network Resolution)</choice>
-      <choice value="email">Email</choice>
-      <choice value="endpoint">Endpoint (Processes)</choice>
-      <choice value="endpoint_filesystem">Endpoint (Filesystem)</choice>
-      <choice value="endpoint_ports">Endpoint (Ports)</choice>
-      <choice value="endpoint_registry">Endpoint (Registry)</choice>
-      <choice value="endpoint_services">Endpoint (Services)</choice>
-      <choice value="event_signatures">Event Signatures</choice>
-      <choice value="interprocess_messaging">Interprocess Messaging</choice>
-      <choice value="intrusion_detection">Intrusion Detection</choice>
-      <choice value="inventory">Inventory</choice>
-      <choice value="jvm">JVM</choice>
-      <choice value="malware">Malware</choice>
-      <choice value="network_sessions">Network Sessions</choice>
-      <choice value="network_traffic">Network Traffic</choice>
-      <choice value="performance">Performance</choice>
-      <choice value="splunk_audit">Splunk Audit</choice>
-      <choice value="ticket_management">Ticket Management</choice>
-      <choice value="updates">Updates</choice>
-      <choice value="vulnerabilities">Vulnerabilities</choice>
-      <choice value="web">Web</choice>
-      <default>authentication</default>
-      <initialValue>authentication</initialValue>
-    </input>
-    <input type="text" token="event_count">
-      <label>Number of Events</label>
-      <default>100</default>
-      <initialValue>100</initialValue>
-    </input>
-    <input type="dropdown" token="timerange" searchWhenChanged="true">
-      <label>Time Range</label>
-      <choice value="-5m">Last 5 minutes</choice>
-      <choice value="-15m">Last 15 minutes</choice>
-      <choice value="-1h">Last 1 hour</choice>
-      <choice value="-4h">Last 4 hours</choice>
-      <choice value="-24h">Last 24 hours</choice>
-      <choice value="-7d">Last 7 days</choice>
-      <default>-1h</default>
-      <initialValue>-1h</initialValue>
-    </input>
-    <input type="dropdown" token="target_index" searchWhenChanged="true">
-      <label>Target Index</label>
-      <search>
-        <query>| rest /services/data/indexes
-| search disabled=0 title!=_*
-| table title
-| sort title</query>
-      </search>
-      <fieldForLabel>title</fieldForLabel>
-      <fieldForValue>title</fieldForValue>
-      <default>synthetic_cim</default>
-      <initialValue>synthetic_cim</initialValue>
-    </input>
-    <input type="text" token="pool_size">
-      <label>Pool Size (entities)</label>
-      <default>50</default>
-      <initialValue>50</initialValue>
-    </input>
-    <input type="dropdown" token="external_ratio" searchWhenChanged="true">
-      <label>External IP Ratio</label>
-      <choice value="5">5%</choice>
-      <choice value="10">10%</choice>
-      <choice value="20">20% (default)</choice>
-      <choice value="40">40%</choice>
-      <choice value="60">60%</choice>
-      <default>20</default>
-      <initialValue>20</initialValue>
-    </input>
-  </fieldset>
+  <row>
+    <panel>
+      <input type="dropdown" token="selected_model" searchWhenChanged="true">
+        <label>CIM Data Model</label>
+        <choice value="alerts">Alerts</choice>
+        <choice value="authentication">Authentication</choice>
+        <choice value="certificates">Certificates</choice>
+        <choice value="change">Change</choice>
+        <choice value="data_access">Data Access</choice>
+        <choice value="databases">Databases</choice>
+        <choice value="dlp">Data Loss Prevention</choice>
+        <choice value="dns">DNS (Network Resolution)</choice>
+        <choice value="email">Email</choice>
+        <choice value="endpoint">Endpoint (Processes)</choice>
+        <choice value="endpoint_filesystem">Endpoint (Filesystem)</choice>
+        <choice value="endpoint_ports">Endpoint (Ports)</choice>
+        <choice value="endpoint_registry">Endpoint (Registry)</choice>
+        <choice value="endpoint_services">Endpoint (Services)</choice>
+        <choice value="event_signatures">Event Signatures</choice>
+        <choice value="interprocess_messaging">Interprocess Messaging</choice>
+        <choice value="intrusion_detection">Intrusion Detection</choice>
+        <choice value="inventory">Inventory</choice>
+        <choice value="jvm">JVM</choice>
+        <choice value="malware">Malware</choice>
+        <choice value="network_sessions">Network Sessions</choice>
+        <choice value="network_traffic">Network Traffic</choice>
+        <choice value="performance">Performance</choice>
+        <choice value="splunk_audit">Splunk Audit</choice>
+        <choice value="ticket_management">Ticket Management</choice>
+        <choice value="updates">Updates</choice>
+        <choice value="vulnerabilities">Vulnerabilities</choice>
+        <choice value="web">Web</choice>
+        <default>authentication</default>
+        <initialValue>authentication</initialValue>
+      </input>
+      <input type="text" token="event_count">
+        <label>Number of Events</label>
+        <default>100</default>
+        <initialValue>100</initialValue>
+      </input>
+      <input type="dropdown" token="timerange" searchWhenChanged="true">
+        <label>Time Range</label>
+        <choice value="-5m">Last 5 minutes</choice>
+        <choice value="-15m">Last 15 minutes</choice>
+        <choice value="-1h">Last 1 hour</choice>
+        <choice value="-4h">Last 4 hours</choice>
+        <choice value="-24h">Last 24 hours</choice>
+        <choice value="-7d">Last 7 days</choice>
+        <default>-1h</default>
+        <initialValue>-1h</initialValue>
+      </input>
+      <input type="dropdown" token="target_index" searchWhenChanged="true">
+        <label>Target Index</label>
+        <search>
+          <query>| rest /services/data/indexes
+  | search disabled=0 title!=_*
+  | table title
+  | sort title</query>
+        </search>
+        <fieldForLabel>title</fieldForLabel>
+        <fieldForValue>title</fieldForValue>
+        <default>synthetic_cim</default>
+        <initialValue>synthetic_cim</initialValue>
+      </input>
+      <input type="text" token="pool_size">
+        <label>Pool Size (entities)</label>
+        <default>50</default>
+        <initialValue>50</initialValue>
+      </input>
+      <input type="dropdown" token="external_ratio" searchWhenChanged="true">
+        <label>External IP Ratio</label>
+        <choice value="5">5%</choice>
+        <choice value="10">10%</choice>
+        <choice value="20">20% (default)</choice>
+        <choice value="40">40%</choice>
+        <choice value="60">60%</choice>
+        <default>20</default>
+        <initialValue>20</initialValue>
+      </input>
+    </panel>
+  </row>
   <row>
     <panel>
       <html>
@@ -264,7 +276,7 @@
     </panel>
   </row>
 
-  <row>
+  <row id="footer_row">
     <html>
       <div class="mb2-footer">
         <p>&#169; 2026 MB2 Analytics. All rights reserved.</p>

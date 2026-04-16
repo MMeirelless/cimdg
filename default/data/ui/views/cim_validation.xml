@@ -1,8 +1,8 @@
-<form version="1.1" stylesheet="css/brand.css, css/footer.css">
+<form version="1.1" stylesheet="css/brand.css, css/footer.css" hideSplunkBar="true" hideAppBar="true" hideTitle="true" hideEdit="true">
   <label>CIM Validation</label>
   <description>Validate CIM compliance of generated events across data models</description>
 
-  <row>
+  <row id="navbar_row">
     <html>
       <div class="mb2-appbar">
         <a href="/app/cimdg" class="mb2-appbar-logo-link">
@@ -17,46 +17,52 @@
     </html>
   </row>
 
-  <!-- Row 1: Model coverage overview -->
-  <!-- Row 2: Data model validation -->
-  <!-- Row 3: Field presence for selected sourcetype -->
-  <!-- Row 4: Sample events from data model -->
-  <!-- Row 5: Raw event inspection -->
-  <fieldset submitButton="false">
-    <input type="dropdown" token="val_model" searchWhenChanged="true">
-      <label>Data Model</label>
-      <choice value="Authentication">Authentication</choice>
-      <choice value="Network_Traffic">Network Traffic</choice>
-      <choice value="Web">Web</choice>
-      <choice value="Endpoint">Endpoint (Processes)</choice>
-      <choice value="Malware">Malware</choice>
-      <choice value="Intrusion_Detection">Intrusion Detection</choice>
-      <choice value="Network_Resolution_DNS">DNS</choice>
-      <choice value="Vulnerabilities">Vulnerabilities</choice>
-      <choice value="Change">Change</choice>
-      <choice value="Email">Email</choice>
-      <choice value="Network_Sessions">Network Sessions</choice>
-      <choice value="Alerts">Alerts</choice>
-      <choice value="DLP">DLP</choice>
-      <choice value="Certificates">Certificates</choice>
-      <choice value="Updates">Updates</choice>
-      <default>Authentication</default>
-    </input>
-    <input type="dropdown" token="val_sourcetype" searchWhenChanged="true">
-      <label>Sourcetype</label>
-      <search>
-        <query>| tstats count where index=* sourcetype=cimdg:synthetic:* by sourcetype
+  <row id="header_row">
+    <html>
+      <div class="mb2-page-header">
+        <h2 class="mb2-page-title">CIM Validation</h2>
+        <p class="mb2-page-desc">Validate CIM compliance of generated events: data model coverage, field completeness, and raw event inspection.</p>
+      </div>
+    </html>
+  </row>
+
+  <row>
+    <panel>
+      <input type="dropdown" token="val_model" searchWhenChanged="true">
+        <label>Data Model</label>
+        <choice value="Authentication">Authentication</choice>
+        <choice value="Network_Traffic">Network Traffic</choice>
+        <choice value="Web">Web</choice>
+        <choice value="Endpoint">Endpoint (Processes)</choice>
+        <choice value="Malware">Malware</choice>
+        <choice value="Intrusion_Detection">Intrusion Detection</choice>
+        <choice value="Network_Resolution_DNS">DNS</choice>
+        <choice value="Vulnerabilities">Vulnerabilities</choice>
+        <choice value="Change">Change</choice>
+        <choice value="Email">Email</choice>
+        <choice value="Network_Sessions">Network Sessions</choice>
+        <choice value="Alerts">Alerts</choice>
+        <choice value="DLP">DLP</choice>
+        <choice value="Certificates">Certificates</choice>
+        <choice value="Updates">Updates</choice>
+        <default>Authentication</default>
+      </input>
+      <input type="dropdown" token="val_sourcetype" searchWhenChanged="true">
+        <label>Sourcetype</label>
+        <search>
+          <query>| tstats count where index=* sourcetype=cimdg:synthetic:* by sourcetype
 | sort sourcetype
 | fields sourcetype</query>
-        <earliest>-24h@h</earliest>
-        <latest>now</latest>
-      </search>
-      <fieldForLabel>sourcetype</fieldForLabel>
-      <fieldForValue>sourcetype</fieldForValue>
-      <choice value="cimdg:synthetic:*">All CIMDG sourcetypes</choice>
-      <default>cimdg:synthetic:*</default>
-    </input>
-  </fieldset>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <fieldForLabel>sourcetype</fieldForLabel>
+        <fieldForValue>sourcetype</fieldForValue>
+        <choice value="cimdg:synthetic:*">All CIMDG sourcetypes</choice>
+        <default>cimdg:synthetic:*</default>
+      </input>
+    </panel>
+  </row>
   <row>
     <panel>
       <title>CIM Data Model Coverage - Event Counts (last 24h)</title>
@@ -162,7 +168,7 @@
     </panel>
   </row>
 
-  <row>
+  <row id="footer_row">
     <html>
       <div class="mb2-footer">
         <p>&#169; 2026 MB2 Analytics. All rights reserved.</p>
