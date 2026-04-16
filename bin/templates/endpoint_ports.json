@@ -1,0 +1,132 @@
+{
+  "model": "Endpoint Ports",
+  "sourcetype": "cimdg:synthetic:endpoint_ports",
+  "tags": [
+    "endpoint",
+    "port",
+    "listening"
+  ],
+  "fields": {
+    "dest": {
+      "type": "hostname"
+    },
+    "dest_port": {
+      "type": "port",
+      "common_ports": [
+        80,
+        443,
+        22,
+        3389,
+        8080,
+        8443,
+        3306,
+        5432,
+        1433,
+        27017
+      ]
+    },
+    "transport": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "tcp",
+          "weight": 85
+        },
+        {
+          "value": "udp",
+          "weight": 15
+        }
+      ]
+    },
+    "state": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "listening",
+          "weight": 70
+        },
+        {
+          "value": "established",
+          "weight": 25
+        },
+        {
+          "value": "close_wait",
+          "weight": 5
+        }
+      ]
+    },
+    "process_id": {
+      "type": "process_id"
+    },
+    "process_name": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "nginx",
+          "weight": 15
+        },
+        {
+          "value": "httpd",
+          "weight": 10
+        },
+        {
+          "value": "sshd",
+          "weight": 15
+        },
+        {
+          "value": "java",
+          "weight": 10
+        },
+        {
+          "value": "python3",
+          "weight": 10
+        },
+        {
+          "value": "node",
+          "weight": 10
+        },
+        {
+          "value": "postgres",
+          "weight": 8
+        },
+        {
+          "value": "mysqld",
+          "weight": 8
+        },
+        {
+          "value": "splunkd",
+          "weight": 7
+        },
+        {
+          "value": "docker-proxy",
+          "weight": 7
+        }
+      ]
+    },
+    "user": {
+      "type": "username"
+    },
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "osquery",
+          "weight": 35
+        },
+        {
+          "value": "CrowdStrike Falcon",
+          "weight": 25
+        },
+        {
+          "value": "Microsoft Sysmon",
+          "weight": 20
+        },
+        {
+          "value": "Wazuh",
+          "weight": 20
+        }
+      ]
+    }
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,117 @@
+name: Splunk AppInspect
+
+on:
+  pull_request:
+    branches: [cimdg-prod]
+  push:
+    branches: [cimdg-prod]
+
+jobs:
+  appinspect:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.9'
+
+      - name: Install Splunk AppInspect
+        run: |
+          pip install splunk-appinspect
+
+      - name: Prepare app for packaging
+        run: |
+          rm -rf local/
+          rm -rf .git/
+          rm -rf .github/
+          rm -rf tests/
+          rm -rf docs/
+          rm -rf .gitignore
+          rm -rf .vscode/
+          rm -rf .idea/
+          rm -rf .claude/
+          rm -f CLAUDE.md
+          rm -f metadata/local.meta
+
+          find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+          find . -type f -name "*.pyc" -delete
+          find . -name ".DS_Store" -delete
+
+      - name: Create app package
+        run: |
+          cd ..
+          mkdir -p output
+          tar -czf "output/cimdg.tar.gz" \
+            --exclude='.*' \
+            "cimdg/"
+          mv "output/cimdg.tar.gz" cimdg/
+
+      - name: Run AppInspect
+        run: |
+          splunk-appinspect inspect "cimdg.tar.gz" \
+            --mode precert \
+            --output-file appinspect_report.json \
+            --log-file appinspect.log
+
+      - name: Display AppInspect summary
+        if: always()
+        run: |
+          python3 << 'PYTHON'
+          import json
+
+          with open('appinspect_report.json') as f:
+              report = json.load(f)
+
+          summary = report['reports'][0]['summary']
+
+          print("\n" + "="*60)
+          print("APPINSPECT SUMMARY")
+          print("="*60)
+          print(f"Success: {summary.get('success', 0)}")
+          print(f"Manual Check: {summary.get('manual_check', 0)}")
+          print(f"Warning: {summary.get('warning', 0)}")
+          print(f"Failure: {summary.get('failure', 0)}")
+          print(f"Error: {summary.get('error', 0)}")
+          print(f"Skipped: {summary.get('skipped', 0)}")
+          print(f"Not Applicable: {summary.get('not_applicable', 0)}")
+          print("="*60 + "\n")
+          PYTHON
+
+      - name: Upload AppInspect report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: appinspect-report
+          path: |
+            appinspect_report.json
+            appinspect.log
+            cimdg.tar.gz
+
+      - name: Check for failures
+        run: |
+          python3 << 'PYTHON'
+          import json
+          import sys
+
+          with open('appinspect_report.json') as f:
+              report = json.load(f)
+
+          summary = report['reports'][0]['summary']
+          failures = summary.get('failure', 0)
+          errors = summary.get('error', 0)
+
+          if failures > 0 or errors > 0:
+              print(f"\nAppInspect found {failures} failures and {errors} errors")
+              print("\nTo fix locally, run:")
+              print("  splunk-appinspect inspect . --mode precert")
+              print("\nThen review: appinspect_report.json\n")
+              sys.exit(1)
+          else:
+              print("\nAppInspect passed! No failures or errors.\n")
+          PYTHON

@@ -1,0 +1,75 @@
+{
+  "model": "Databases",
+  "sourcetype": "cimdg:synthetic:databases",
+  "tags": ["database"],
+  "fields": {
+    "dest": {"type": "hostname"},
+    "instance": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "prod-db-01", "weight": 20},
+        {"value": "prod-db-02", "weight": 15},
+        {"value": "staging-db-01", "weight": 15},
+        {"value": "dev-db-01", "weight": 15},
+        {"value": "replica-db-01", "weight": 10},
+        {"value": "analytics-db-01", "weight": 10},
+        {"value": "reporting-db-01", "weight": 8},
+        {"value": "archive-db-01", "weight": 7}
+      ]
+    },
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "Oracle Database", "weight": 25},
+        {"value": "MySQL", "weight": 25},
+        {"value": "PostgreSQL", "weight": 20},
+        {"value": "Microsoft SQL Server", "weight": 15},
+        {"value": "MongoDB", "weight": 10},
+        {"value": "Redis", "weight": 5}
+      ]
+    },
+    "db_name": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "production", "weight": 20},
+        {"value": "customers", "weight": 15},
+        {"value": "orders", "weight": 15},
+        {"value": "inventory", "weight": 10},
+        {"value": "analytics", "weight": 10},
+        {"value": "auth_db", "weight": 10},
+        {"value": "logging", "weight": 10},
+        {"value": "sessions", "weight": 10}
+      ]
+    },
+    "query": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "SELECT * FROM users WHERE id = ?", "weight": 25},
+        {"value": "SELECT count(*) FROM orders WHERE date > ?", "weight": 15},
+        {"value": "INSERT INTO logs (timestamp, message) VALUES (?, ?)", "weight": 10},
+        {"value": "UPDATE sessions SET last_active = ? WHERE session_id = ?", "weight": 8},
+        {"value": "DELETE FROM temp_data WHERE created < ?", "weight": 4},
+        {"value": "SELECT u.name, o.total FROM users u JOIN orders o ON u.id = o.user_id", "weight": 10},
+        {"value": "CREATE INDEX idx_users_email ON users(email)", "weight": 3},
+        {"value": "EXPLAIN SELECT * FROM products WHERE category = ?", "weight": 5},
+        {"value": "BEGIN TRANSACTION; UPDATE accounts SET balance = balance - ?;", "weight": 5},
+        {"value": "SELECT * FROM audit_log ORDER BY timestamp DESC LIMIT 100", "weight": 15}
+      ]
+    },
+    "query_time": {"type": "lognormal", "mu": 2, "sigma": 2, "max": 30000, "precision": 1},
+    "rows_affected": {"type": "number", "min": 0, "max": 10000},
+    "status": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "success", "weight": 92},
+        {"value": "failure", "weight": 5},
+        {"value": "timeout", "weight": 3}
+      ]
+    }
+  },
+  "dependencies": {
+    "status=timeout": {
+      "query_time": {"type": "number", "min": 5000, "max": 30000, "precision": 1}
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "model": "Splunk Audit",
+  "sourcetype": "cimdg:synthetic:splunk_audit",
+  "tags": ["audit"],
+  "fields": {
+    "action": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "search", "weight": 65},
+        {"value": "login", "weight": 15},
+        {"value": "edit", "weight": 10},
+        {"value": "logout", "weight": 5},
+        {"value": "delete", "weight": 3},
+        {"value": "create", "weight": 2}
+      ]
+    },
+    "info": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "granted", "weight": 90},
+        {"value": "failed", "weight": 7},
+        {"value": "completed", "weight": 3}
+      ]
+    },
+    "user": {"type": "username"},
+    "roles": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "admin", "weight": 20},
+        {"value": "power", "weight": 30},
+        {"value": "user", "weight": 40},
+        {"value": "sc_admin", "weight": 10}
+      ]
+    },
+    "search_id": {"type": "session_id"},
+    "search": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "index=main | stats count by sourcetype", "weight": 15},
+        {"value": "index=_internal source=*metrics.log | timechart avg(cpu_seconds)", "weight": 10},
+        {"value": "| rest /services/server/info", "weight": 8},
+        {"value": "index=security action=failure | stats count by src", "weight": 12},
+        {"value": "| tstats count from datamodel=Authentication", "weight": 10},
+        {"value": "index=* | stats count by index", "weight": 8},
+        {"value": "| inputlookup my_lookup.csv", "weight": 5},
+        {"value": "", "weight": 32}
+      ]
+    },
+    "object": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "search", "weight": 40},
+        {"value": "saved_search", "weight": 15},
+        {"value": "user", "weight": 10},
+        {"value": "role", "weight": 5},
+        {"value": "app", "weight": 10},
+        {"value": "dashboard", "weight": 10},
+        {"value": "input", "weight": 10}
+      ]
+    }
+  },
+  "dependencies": {}
+}

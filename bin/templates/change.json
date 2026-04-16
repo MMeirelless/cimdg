@@ -1,0 +1,227 @@
+{
+  "model": "Change",
+  "sourcetype": "cimdg:synthetic:change",
+  "tags": [
+    "change"
+  ],
+  "fields": {
+    "action": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "created",
+          "weight": 25
+        },
+        {
+          "value": "modified",
+          "weight": 45
+        },
+        {
+          "value": "deleted",
+          "weight": 15
+        },
+        {
+          "value": "read",
+          "weight": 15
+        }
+      ]
+    },
+    "change_type": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "filesystem",
+          "weight": 25
+        },
+        {
+          "value": "AAA",
+          "weight": 20
+        },
+        {
+          "value": "audit",
+          "weight": 20
+        },
+        {
+          "value": "network",
+          "weight": 15
+        },
+        {
+          "value": "application",
+          "weight": 10
+        },
+        {
+          "value": "configuration",
+          "weight": 10
+        }
+      ]
+    },
+    "command": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "chmod 755 /etc/config",
+          "weight": 10
+        },
+        {
+          "value": "useradd newuser",
+          "weight": 10
+        },
+        {
+          "value": "iptables -A INPUT -p tcp --dport 22 -j ACCEPT",
+          "weight": 10
+        },
+        {
+          "value": "Set-ADUser -Identity jsmith -Enabled $true",
+          "weight": 10
+        },
+        {
+          "value": "systemctl restart nginx",
+          "weight": 10
+        },
+        {
+          "value": "apt-get update && apt-get upgrade",
+          "weight": 10
+        },
+        {
+          "value": "",
+          "weight": 40
+        }
+      ]
+    },
+    "dest": {
+      "type": "hostname"
+    },
+    "dvc": {
+      "type": "hostname"
+    },
+    "object": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "/etc/passwd",
+          "weight": 10
+        },
+        {
+          "value": "/etc/sudoers",
+          "weight": 8
+        },
+        {
+          "value": "firewall_rule_set",
+          "weight": 10
+        },
+        {
+          "value": "user_account",
+          "weight": 15
+        },
+        {
+          "value": "group_membership",
+          "weight": 10
+        },
+        {
+          "value": "service_configuration",
+          "weight": 12
+        },
+        {
+          "value": "scheduled_task",
+          "weight": 8
+        },
+        {
+          "value": "audit_policy",
+          "weight": 7
+        },
+        {
+          "value": "network_interface",
+          "weight": 8
+        },
+        {
+          "value": "application_setting",
+          "weight": 12
+        }
+      ]
+    },
+    "object_category": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "file",
+          "weight": 25
+        },
+        {
+          "value": "user",
+          "weight": 20
+        },
+        {
+          "value": "policy",
+          "weight": 15
+        },
+        {
+          "value": "service",
+          "weight": 15
+        },
+        {
+          "value": "network",
+          "weight": 15
+        },
+        {
+          "value": "registry",
+          "weight": 10
+        }
+      ]
+    },
+    "result": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "success",
+          "weight": 90
+        },
+        {
+          "value": "failure",
+          "weight": 10
+        }
+      ]
+    },
+    "status": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "success",
+          "weight": 90
+        },
+        {
+          "value": "failure",
+          "weight": 10
+        }
+      ]
+    },
+    "user": {
+      "type": "username"
+    },
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "Microsoft Windows",
+          "weight": 30
+        },
+        {
+          "value": "Linux Auditd",
+          "weight": 25
+        },
+        {
+          "value": "Cisco IOS",
+          "weight": 15
+        },
+        {
+          "value": "Palo Alto PAN-OS",
+          "weight": 15
+        },
+        {
+          "value": "Tripwire",
+          "weight": 15
+        }
+      ]
+    }
+  },
+  "dependencies": {}
+}

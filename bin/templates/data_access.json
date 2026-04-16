@@ -1,0 +1,62 @@
+{
+  "model": "Data Access",
+  "sourcetype": "cimdg:synthetic:data_access",
+  "tags": ["data", "access"],
+  "fields": {
+    "action": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "read", "weight": 55},
+        {"value": "write", "weight": 20},
+        {"value": "create", "weight": 8},
+        {"value": "delete", "weight": 5},
+        {"value": "modify", "weight": 7},
+        {"value": "execute", "weight": 5}
+      ]
+    },
+    "dest": {"type": "hostname"},
+    "object": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "/data/reports/quarterly.xlsx", "weight": 10},
+        {"value": "/data/customer_records.db", "weight": 10},
+        {"value": "/var/log/auth.log", "weight": 10},
+        {"value": "/etc/shadow", "weight": 5},
+        {"value": "\\\\fileserver\\shared\\contracts", "weight": 10},
+        {"value": "s3://company-data/backups", "weight": 8},
+        {"value": "/opt/app/config.yml", "weight": 8},
+        {"value": "database:customers:users_table", "weight": 10},
+        {"value": "/home/admin/.ssh/authorized_keys", "weight": 5},
+        {"value": "sharepoint://documents/hr_policies", "weight": 8},
+        {"value": "/tmp/export_data.csv", "weight": 8},
+        {"value": "registry:HKLM\\SOFTWARE\\Policies", "weight": 8}
+      ]
+    },
+    "object_category": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "file", "weight": 35},
+        {"value": "database", "weight": 20},
+        {"value": "directory", "weight": 15},
+        {"value": "registry", "weight": 10},
+        {"value": "cloud_storage", "weight": 10},
+        {"value": "network_share", "weight": 10}
+      ]
+    },
+    "object_path": {"type": "file_path"},
+    "src": {"type": "src_ip"},
+    "user": {"type": "username"},
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "Microsoft Windows", "weight": 25},
+        {"value": "Linux Auditd", "weight": 25},
+        {"value": "Varonis DatAdvantage", "weight": 15},
+        {"value": "AWS CloudTrail", "weight": 15},
+        {"value": "Microsoft Purview", "weight": 10},
+        {"value": "Netwrix Auditor", "weight": 10}
+      ]
+    }
+  },
+  "dependencies": {}
+}

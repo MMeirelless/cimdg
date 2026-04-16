@@ -1,0 +1,154 @@
+{
+  "model": "Updates",
+  "sourcetype": "cimdg:synthetic:updates",
+  "tags": [
+    "update",
+    "status"
+  ],
+  "fields": {
+    "dest": {
+      "type": "hostname"
+    },
+    "signature": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "KB5034441 - Security Update",
+          "weight": 10
+        },
+        {
+          "value": "KB5034765 - Cumulative Update",
+          "weight": 10
+        },
+        {
+          "value": "KB5035845 - .NET Framework Update",
+          "weight": 8
+        },
+        {
+          "value": "OpenSSL 3.2.1 Security Update",
+          "weight": 8
+        },
+        {
+          "value": "Apache HTTP Server 2.4.58",
+          "weight": 7
+        },
+        {
+          "value": "nginx 1.25.4 Stable Release",
+          "weight": 7
+        },
+        {
+          "value": "kernel-5.15.0-94.104 Security Update",
+          "weight": 8
+        },
+        {
+          "value": "Python 3.12.2 Release",
+          "weight": 6
+        },
+        {
+          "value": "Java SE 21.0.2 Critical Patch",
+          "weight": 6
+        },
+        {
+          "value": "Chrome 121.0.6167.85 Security Update",
+          "weight": 7
+        },
+        {
+          "value": "Firefox 122.0 Release",
+          "weight": 5
+        },
+        {
+          "value": "RHSA-2026:0042 - Important Security",
+          "weight": 6
+        },
+        {
+          "value": "USN-6587-1 - Ubuntu Security Notice",
+          "weight": 6
+        },
+        {
+          "value": "Splunk Enterprise 9.2.1 Maintenance",
+          "weight": 6
+        }
+      ]
+    },
+    "signature_id": {
+      "type": "number",
+      "min": 100000,
+      "max": 999999
+    },
+    "status": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "installed",
+          "weight": 70
+        },
+        {
+          "value": "available",
+          "weight": 18
+        },
+        {
+          "value": "failed",
+          "weight": 5
+        },
+        {
+          "value": "deferred",
+          "weight": 7
+        }
+      ]
+    },
+    "severity": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "critical",
+          "weight": 15
+        },
+        {
+          "value": "important",
+          "weight": 30
+        },
+        {
+          "value": "moderate",
+          "weight": 35
+        },
+        {
+          "value": "low",
+          "weight": 20
+        }
+      ]
+    },
+    "dvc": {
+      "type": "hostname"
+    },
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "Microsoft WSUS",
+          "weight": 25
+        },
+        {
+          "value": "SCCM",
+          "weight": 20
+        },
+        {
+          "value": "Red Hat Satellite",
+          "weight": 15
+        },
+        {
+          "value": "Canonical Landscape",
+          "weight": 10
+        },
+        {
+          "value": "ManageEngine Patch Manager",
+          "weight": 15
+        },
+        {
+          "value": "Ivanti Patch",
+          "weight": 15
+        }
+      ]
+    }
+  },
+  "dependencies": {}
+}

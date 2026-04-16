@@ -1,0 +1,298 @@
+{
+  "model": "Intrusion Detection",
+  "sourcetype": "cimdg:synthetic:intrusion_detection",
+  "tags": [
+    "ids",
+    "attack"
+  ],
+  "fields": {
+    "action": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "blocked",
+          "weight": 55
+        },
+        {
+          "value": "allowed",
+          "weight": 35
+        },
+        {
+          "value": "dropped",
+          "weight": 10
+        }
+      ]
+    },
+    "category": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "exploit",
+          "weight": 25
+        },
+        {
+          "value": "web-application-attack",
+          "weight": 20
+        },
+        {
+          "value": "DoS",
+          "weight": 10
+        },
+        {
+          "value": "brute-force",
+          "weight": 15
+        },
+        {
+          "value": "reconnaissance",
+          "weight": 15
+        },
+        {
+          "value": "malware-cnc",
+          "weight": 10
+        },
+        {
+          "value": "policy-violation",
+          "weight": 5
+        }
+      ]
+    },
+    "dest": {
+      "type": "dest_ip"
+    },
+    "dest_port": {
+      "type": "port",
+      "common_ports": [
+        80,
+        443,
+        22,
+        3389,
+        445,
+        8080,
+        8443,
+        3306,
+        5432,
+        1433
+      ]
+    },
+    "dvc": {
+      "type": "hostname"
+    },
+    "ids_type": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "network",
+          "weight": 60
+        },
+        {
+          "value": "host",
+          "weight": 30
+        },
+        {
+          "value": "application",
+          "weight": 10
+        }
+      ]
+    },
+    "severity": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "critical",
+          "weight": 5
+        },
+        {
+          "value": "high",
+          "weight": 15
+        },
+        {
+          "value": "medium",
+          "weight": 40
+        },
+        {
+          "value": "low",
+          "weight": 30
+        },
+        {
+          "value": "informational",
+          "weight": 10
+        }
+      ]
+    },
+    "signature": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "ET SCAN Nmap Scripting Engine User-Agent",
+          "weight": 10
+        },
+        {
+          "value": "SQL Injection Attempt",
+          "weight": 12
+        },
+        {
+          "value": "CVE-2021-44228 Log4j RCE Attempt",
+          "weight": 8
+        },
+        {
+          "value": "ET EXPLOIT Apache Struts RCE",
+          "weight": 7
+        },
+        {
+          "value": "SSH Brute Force Attempt",
+          "weight": 12
+        },
+        {
+          "value": "ET MALWARE CnC Beacon Activity",
+          "weight": 8
+        },
+        {
+          "value": "Cross-Site Scripting (XSS) Attempt",
+          "weight": 10
+        },
+        {
+          "value": "Directory Traversal Attempt",
+          "weight": 8
+        },
+        {
+          "value": "ET POLICY Outbound SMB Connection",
+          "weight": 7
+        },
+        {
+          "value": "RDP Brute Force Attempt",
+          "weight": 8
+        },
+        {
+          "value": "DNS Tunneling Detected",
+          "weight": 5
+        },
+        {
+          "value": "Port Scan Detected",
+          "weight": 5
+        }
+      ]
+    },
+    "signature_id": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "2001219",
+          "weight": 10
+        },
+        {
+          "value": "1000001",
+          "weight": 12
+        },
+        {
+          "value": "2034647",
+          "weight": 8
+        },
+        {
+          "value": "2021711",
+          "weight": 7
+        },
+        {
+          "value": "2001219",
+          "weight": 12
+        },
+        {
+          "value": "2025495",
+          "weight": 8
+        },
+        {
+          "value": "1000002",
+          "weight": 10
+        },
+        {
+          "value": "1000003",
+          "weight": 8
+        },
+        {
+          "value": "2012647",
+          "weight": 7
+        },
+        {
+          "value": "2003068",
+          "weight": 8
+        },
+        {
+          "value": "2027863",
+          "weight": 5
+        },
+        {
+          "value": "2010935",
+          "weight": 5
+        }
+      ]
+    },
+    "src": {
+      "type": "src_ip"
+    },
+    "src_port": {
+      "type": "high_port"
+    },
+    "transport": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "tcp",
+          "weight": 80
+        },
+        {
+          "value": "udp",
+          "weight": 15
+        },
+        {
+          "value": "icmp",
+          "weight": 5
+        }
+      ]
+    },
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "Snort",
+          "weight": 25
+        },
+        {
+          "value": "Suricata",
+          "weight": 25
+        },
+        {
+          "value": "Palo Alto Threat",
+          "weight": 20
+        },
+        {
+          "value": "Cisco Firepower",
+          "weight": 15
+        },
+        {
+          "value": "Fortinet IPS",
+          "weight": 15
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "severity=critical": {
+      "action": {
+        "type": "weighted_choice",
+        "values": [
+          {
+            "value": "blocked",
+            "weight": 80
+          },
+          {
+            "value": "dropped",
+            "weight": 15
+          },
+          {
+            "value": "allowed",
+            "weight": 5
+          }
+        ]
+      }
+    }
+  }
+}

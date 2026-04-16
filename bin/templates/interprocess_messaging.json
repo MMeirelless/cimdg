@@ -1,0 +1,55 @@
+{
+  "model": "Interprocess Messaging",
+  "sourcetype": "cimdg:synthetic:interprocess_messaging",
+  "tags": ["messaging"],
+  "fields": {
+    "dest": {"type": "hostname"},
+    "status": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "success", "weight": 85},
+        {"value": "failure", "weight": 10},
+        {"value": "queued", "weight": 5}
+      ]
+    },
+    "payload_type": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "json", "weight": 40},
+        {"value": "protobuf", "weight": 20},
+        {"value": "avro", "weight": 10},
+        {"value": "xml", "weight": 10},
+        {"value": "binary", "weight": 10},
+        {"value": "text", "weight": 10}
+      ]
+    },
+    "channel": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "orders.created", "weight": 15},
+        {"value": "users.updated", "weight": 12},
+        {"value": "payments.processed", "weight": 10},
+        {"value": "notifications.email", "weight": 10},
+        {"value": "audit.events", "weight": 10},
+        {"value": "metrics.collected", "weight": 10},
+        {"value": "alerts.triggered", "weight": 8},
+        {"value": "inventory.sync", "weight": 8},
+        {"value": "logs.ingested", "weight": 7},
+        {"value": "tasks.scheduled", "weight": 10}
+      ]
+    },
+    "message_id": {"type": "message_id"},
+    "src": {"type": "hostname"},
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {"value": "Apache Kafka", "weight": 30},
+        {"value": "RabbitMQ", "weight": 25},
+        {"value": "Amazon SQS", "weight": 15},
+        {"value": "Redis Pub/Sub", "weight": 15},
+        {"value": "Azure Service Bus", "weight": 15}
+      ]
+    }
+  },
+  "dependencies": {}
+}

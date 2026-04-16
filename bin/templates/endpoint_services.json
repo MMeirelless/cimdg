@@ -1,0 +1,111 @@
+{
+  "model": "Endpoint Services",
+  "sourcetype": "cimdg:synthetic:endpoint_services",
+  "tags": [
+    "endpoint",
+    "service"
+  ],
+  "fields": {
+    "action": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "started",
+          "weight": 35
+        },
+        {
+          "value": "stopped",
+          "weight": 30
+        },
+        {
+          "value": "created",
+          "weight": 5
+        },
+        {
+          "value": "deleted",
+          "weight": 3
+        },
+        {
+          "value": "modified",
+          "weight": 27
+        }
+      ]
+    },
+    "dest": {
+      "type": "hostname"
+    },
+    "name": {
+      "type": "service_name"
+    },
+    "start_mode": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "auto",
+          "weight": 60
+        },
+        {
+          "value": "manual",
+          "weight": 25
+        },
+        {
+          "value": "disabled",
+          "weight": 15
+        }
+      ]
+    },
+    "service_path": {
+      "type": "file_path"
+    },
+    "status": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "started",
+          "weight": 60
+        },
+        {
+          "value": "stopped",
+          "weight": 30
+        },
+        {
+          "value": "critical",
+          "weight": 5
+        },
+        {
+          "value": "warning",
+          "weight": 5
+        }
+      ]
+    },
+    "user": {
+      "type": "username"
+    },
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "Microsoft Sysmon",
+          "weight": 30
+        },
+        {
+          "value": "CrowdStrike Falcon",
+          "weight": 25
+        },
+        {
+          "value": "osquery",
+          "weight": 20
+        },
+        {
+          "value": "Wazuh",
+          "weight": 15
+        },
+        {
+          "value": "Splunk UF",
+          "weight": 10
+        }
+      ]
+    }
+  },
+  "dependencies": {}
+}

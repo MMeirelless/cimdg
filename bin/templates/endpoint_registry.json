@@ -1,0 +1,130 @@
+{
+  "model": "Endpoint Registry",
+  "sourcetype": "cimdg:synthetic:endpoint_registry",
+  "tags": [
+    "endpoint",
+    "registry"
+  ],
+  "fields": {
+    "action": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "created",
+          "weight": 20
+        },
+        {
+          "value": "modified",
+          "weight": 50
+        },
+        {
+          "value": "deleted",
+          "weight": 10
+        },
+        {
+          "value": "read",
+          "weight": 20
+        }
+      ]
+    },
+    "dest": {
+      "type": "hostname"
+    },
+    "registry_path": {
+      "type": "registry_path"
+    },
+    "registry_hive": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "HKLM",
+          "weight": 50
+        },
+        {
+          "value": "HKCU",
+          "weight": 35
+        },
+        {
+          "value": "HKU",
+          "weight": 15
+        }
+      ]
+    },
+    "registry_key_name": {
+      "type": "registry_path"
+    },
+    "registry_value_name": {
+      "type": "registry_value"
+    },
+    "registry_value_data": {
+      "type": "file_path",
+      "os": "windows"
+    },
+    "registry_value_type": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "REG_SZ",
+          "weight": 40
+        },
+        {
+          "value": "REG_DWORD",
+          "weight": 30
+        },
+        {
+          "value": "REG_BINARY",
+          "weight": 10
+        },
+        {
+          "value": "REG_EXPAND_SZ",
+          "weight": 10
+        },
+        {
+          "value": "REG_MULTI_SZ",
+          "weight": 10
+        }
+      ]
+    },
+    "process_id": {
+      "type": "process_id"
+    },
+    "user": {
+      "type": "username"
+    },
+    "status": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "success",
+          "weight": 95
+        },
+        {
+          "value": "failure",
+          "weight": 5
+        }
+      ]
+    },
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "Microsoft Sysmon",
+          "weight": 40
+        },
+        {
+          "value": "CrowdStrike Falcon",
+          "weight": 30
+        },
+        {
+          "value": "Carbon Black Response",
+          "weight": 20
+        },
+        {
+          "value": "osquery",
+          "weight": 10
+        }
+      ]
+    }
+  },
+  "dependencies": {}
+}

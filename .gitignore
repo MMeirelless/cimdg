@@ -1,0 +1,100 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+MANIFEST
+
+# PyInstaller
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Type checkers / linters
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+cython_debug/
+
+# Misc Python tools
+.pdm.toml
+.pdm-python
+.pdm-build/
+__pypackages__/
+*.sage.py
+
+# ===== SPLUNK SPECIFIC =====
+# Never commit local/ directory (runtime configs)
+local/app.conf
+local/passwords.conf
+local/authentication.conf
+local/server.conf
+metadata/local.meta
+
+# Splunk build artifacts
+*.spl
+*.tar.gz
+
+# Splunk logs
+*.log
+*.log.*
+
+# Splunk lookup backups
+*.bak
+
+# App packaging
+/package/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Claude Code worktrees
+.claude/worktrees/
+
+# Temporary files
+*.tmp
+.tmp/

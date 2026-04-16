@@ -1,0 +1,193 @@
+{
+  "model": "DLP",
+  "sourcetype": "cimdg:synthetic:dlp",
+  "tags": [
+    "dlp",
+    "incident"
+  ],
+  "fields": {
+    "action": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "blocked",
+          "weight": 50
+        },
+        {
+          "value": "allowed",
+          "weight": 30
+        },
+        {
+          "value": "quarantined",
+          "weight": 20
+        }
+      ]
+    },
+    "user": {
+      "type": "username"
+    },
+    "dlp_type": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "SSN",
+          "weight": 20
+        },
+        {
+          "value": "credit_card",
+          "weight": 25
+        },
+        {
+          "value": "PII",
+          "weight": 25
+        },
+        {
+          "value": "PHI",
+          "weight": 10
+        },
+        {
+          "value": "intellectual_property",
+          "weight": 10
+        },
+        {
+          "value": "financial_data",
+          "weight": 10
+        }
+      ]
+    },
+    "file_name": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "customer_data.xlsx",
+          "weight": 15
+        },
+        {
+          "value": "employee_records.csv",
+          "weight": 12
+        },
+        {
+          "value": "financial_report.pdf",
+          "weight": 10
+        },
+        {
+          "value": "patient_records.docx",
+          "weight": 8
+        },
+        {
+          "value": "source_code.zip",
+          "weight": 8
+        },
+        {
+          "value": "database_export.sql",
+          "weight": 8
+        },
+        {
+          "value": "credentials.txt",
+          "weight": 7
+        },
+        {
+          "value": "backup.tar.gz",
+          "weight": 7
+        },
+        {
+          "value": "contracts.pdf",
+          "weight": 8
+        },
+        {
+          "value": "passport_scan.jpg",
+          "weight": 5
+        },
+        {
+          "value": "",
+          "weight": 12
+        }
+      ]
+    },
+    "file_path": {
+      "type": "file_path"
+    },
+    "severity": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "critical",
+          "weight": 10
+        },
+        {
+          "value": "high",
+          "weight": 25
+        },
+        {
+          "value": "medium",
+          "weight": 40
+        },
+        {
+          "value": "low",
+          "weight": 25
+        }
+      ]
+    },
+    "policy": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "PCI-DSS Compliance",
+          "weight": 20
+        },
+        {
+          "value": "HIPAA PHI Protection",
+          "weight": 15
+        },
+        {
+          "value": "PII Detection",
+          "weight": 20
+        },
+        {
+          "value": "Source Code Protection",
+          "weight": 10
+        },
+        {
+          "value": "Financial Data Policy",
+          "weight": 15
+        },
+        {
+          "value": "General Data Protection",
+          "weight": 20
+        }
+      ]
+    },
+    "src": {
+      "type": "src_ip"
+    },
+    "dest": {
+      "type": "dest_ip"
+    },
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "Symantec DLP",
+          "weight": 25
+        },
+        {
+          "value": "Microsoft Purview",
+          "weight": 25
+        },
+        {
+          "value": "Forcepoint DLP",
+          "weight": 20
+        },
+        {
+          "value": "Digital Guardian",
+          "weight": 15
+        },
+        {
+          "value": "Zscaler DLP",
+          "weight": 15
+        }
+      ]
+    }
+  },
+  "dependencies": {}
+}

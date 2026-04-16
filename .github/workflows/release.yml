@@ -1,0 +1,159 @@
+name: Release Package
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - name: Get version from tag
+        id: get_version
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          VERSION=${TAG#v}
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Packaging version: $VERSION"
+
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Validate app ID
+        run: |
+          ACTUAL_APP_ID=$(grep '^\[package\]' -A 5 default/app.conf | grep '^id' | sed 's/^id = //')
+          echo "App ID: $ACTUAL_APP_ID"
+
+          if [ "cimdg" != "$ACTUAL_APP_ID" ]; then
+            echo "::error::App ID mismatch! Expected 'cimdg' but app.conf has '$ACTUAL_APP_ID'."
+            exit 1
+          fi
+
+      - name: Update version in configs
+        run: |
+          VERSION=${{ steps.get_version.outputs.version }}
+
+          sed -i "s/^version = .*/version = $VERSION/" default/app.conf
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" app.manifest
+
+          echo "Updated version to $VERSION in:"
+          echo "   - default/app.conf"
+          echo "   - app.manifest"
+
+      - name: Prepare app for packaging
+        run: |
+          echo "Cleaning up development files..."
+
+          rm -rf local/
+          rm -rf .git/
+          rm -rf .github/
+          rm -rf tests/
+          rm -rf docs/
+          rm -rf .gitignore
+          rm -rf .vscode/
+          rm -rf .idea/
+          rm -rf .claude/
+          rm -f CLAUDE.md
+          rm -f metadata/local.meta
+          find . -maxdepth 1 -name "*.md" ! -name "README.md" -delete
+
+          find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+          find . -type f -name "*.pyc" -delete
+          find . -name ".DS_Store" -delete
+
+          echo "Cleanup complete"
+
+      - name: Create .spl package
+        run: |
+          VERSION=${{ steps.get_version.outputs.version }}
+
+          cd ..
+          tar -czf "cimdg-${VERSION}.spl" "cimdg/"
+
+          echo "Created: cimdg-${VERSION}.spl"
+          echo ""
+          echo "Package contents:"
+          tar -tzf "cimdg-${VERSION}.spl" | head -20
+          echo "..."
+
+          mv "cimdg-${VERSION}.spl" cimdg/
+
+      - name: Generate SHA256 checksum
+        id: checksum
+        run: |
+          VERSION=${{ steps.get_version.outputs.version }}
+          sha256sum "cimdg-${VERSION}.spl" > "cimdg-${VERSION}.spl.sha256"
+          CHECKSUM=$(cat "cimdg-${VERSION}.spl.sha256")
+          echo "sha256=$CHECKSUM" >> $GITHUB_OUTPUT
+          echo "Generated checksum:"
+          echo "$CHECKSUM"
+
+      - name: Prepare release body
+        run: |
+          VERSION=${{ steps.get_version.outputs.version }}
+          CHECKSUM="${{ steps.checksum.outputs.sha256 }}"
+
+          cat > release_body.md <<BODY
+          ## CIM Data Generator v${VERSION}
+
+          **CIM-Native Synthetic Data Generator for Splunk**
+
+          ### Installation
+
+          1. Download \`cimdg-${VERSION}.spl\`
+          2. In Splunk Web: **Apps > Manage Apps > Install app from file**
+          3. Upload the \`.spl\` file
+          4. Restart Splunk
+          5. Create a \`synthetic_cim\` index: **Settings > Indexes > New Index**
+          6. Access: **Apps > CIM Data Generator**
+
+          ### What's New
+
+          See [CHANGELOG.md](https://github.com/MMeirelless/cimdg/blob/cimdg-prod/CHANGELOG.md) for detailed changes.
+
+          ### Verification
+
+          **SHA256 Checksum:**
+          \`\`\`
+          ${CHECKSUM}
+          \`\`\`
+
+          Verify integrity:
+          \`\`\`bash
+          sha256sum -c cimdg-${VERSION}.spl.sha256
+          \`\`\`
+
+          ### Documentation
+
+          - [README](https://github.com/MMeirelless/cimdg/blob/cimdg-prod/README.md)
+          - [Support](mailto:matheus@mb2analytics.com)
+
+          ### License
+
+          See [LICENSE.txt](https://mb2analytics.com/license)
+
+          ---
+
+          **MB2 Analytics** | Splunk Official Partner
+          BODY
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: CIM Data Generator v${{ steps.get_version.outputs.version }}
+          files: |
+            cimdg-${{ steps.get_version.outputs.version }}.spl
+            cimdg-${{ steps.get_version.outputs.version }}.spl.sha256
+          body_path: release_body.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

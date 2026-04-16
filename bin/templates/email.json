@@ -1,0 +1,152 @@
+{
+  "model": "Email",
+  "sourcetype": "cimdg:synthetic:email",
+  "tags": [
+    "email"
+  ],
+  "fields": {
+    "action": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "delivered",
+          "weight": 75
+        },
+        {
+          "value": "blocked",
+          "weight": 10
+        },
+        {
+          "value": "quarantined",
+          "weight": 10
+        },
+        {
+          "value": "deleted",
+          "weight": 5
+        }
+      ]
+    },
+    "recipient": {
+      "type": "email_address"
+    },
+    "src_user": {
+      "type": "email_address"
+    },
+    "subject": {
+      "type": "email_subject"
+    },
+    "message_id": {
+      "type": "message_id"
+    },
+    "file_name": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "",
+          "weight": 60
+        },
+        {
+          "value": "report.pdf",
+          "weight": 8
+        },
+        {
+          "value": "invoice.xlsx",
+          "weight": 7
+        },
+        {
+          "value": "document.docx",
+          "weight": 7
+        },
+        {
+          "value": "presentation.pptx",
+          "weight": 5
+        },
+        {
+          "value": "archive.zip",
+          "weight": 5
+        },
+        {
+          "value": "image.png",
+          "weight": 4
+        },
+        {
+          "value": "payload.exe",
+          "weight": 2
+        },
+        {
+          "value": "macro.docm",
+          "weight": 2
+        }
+      ]
+    },
+    "file_hash": {
+      "type": "md5_hash"
+    },
+    "size": {
+      "type": "lognormal",
+      "mu": 9,
+      "sigma": 2,
+      "max": 25000000,
+      "precision": 0
+    },
+    "src": {
+      "type": "src_ip"
+    },
+    "dest": {
+      "type": "dest_ip"
+    },
+    "user": {
+      "type": "username"
+    },
+    "vendor_product": {
+      "type": "weighted_choice",
+      "values": [
+        {
+          "value": "Microsoft Exchange",
+          "weight": 30
+        },
+        {
+          "value": "Proofpoint",
+          "weight": 20
+        },
+        {
+          "value": "Mimecast",
+          "weight": 15
+        },
+        {
+          "value": "Barracuda",
+          "weight": 15
+        },
+        {
+          "value": "Google Workspace",
+          "weight": 20
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "action=blocked": {
+      "file_name": {
+        "type": "weighted_choice",
+        "values": [
+          {
+            "value": "payload.exe",
+            "weight": 30
+          },
+          {
+            "value": "macro.docm",
+            "weight": 30
+          },
+          {
+            "value": "archive.zip",
+            "weight": 20
+          },
+          {
+            "value": "dropper.js",
+            "weight": 20
+          }
+        ]
+      }
+    }
+  }
+}
